@@ -1,16 +1,219 @@
 {
+ "Aller": [
+  {
+   "nombre": "Cabañaquinta",
+   "url": "https://www.webcamsdeasturias.com/asturias/montana-central/aller/cabanaquinta/cabanaquinta/96/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Felechosa · Puerto de San Isidro",
+   "url": "https://www.webcamsdeasturias.com/asturias/montana-central/aller/felechosa/panoramica-san-isidro-felechosa-hd/105/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "La Pola de Aller · Puerto de San Isidro",
+   "url": "https://www.webcamsdeasturias.com/asturias/san-isidro/aller/pola-pino/la-pola-de-aller-hd/206/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Valle del río Negro · Nembra · Coto Bello",
+   "url": "https://www.webcamsdeasturias.com/asturias/valle-del-caudal/aller/coto-bello/nembra-hd/18/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  }
+ ],
  "Avilés": [
   {
    "nombre": "Ría de Avilés",
    "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-aviles/aviles/aviles/ria-de-aviles-hd/6/",
    "fuente": "Webcams de Asturias"
+  },
+  {
+   "nombre": "Parque del muelle · Ría de Avilés",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-aviles/aviles/aviles/parque-del-muelle-hd/63/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Belmonte de Miranda": [
+  {
+   "nombre": "Belmonte",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/belmonte/belmonte/belmonte/109/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "rio"
+   ]
+  }
+ ],
+ "Boal": [
+  {
+   "nombre": "Boal desde el Ayuntamiento",
+   "url": "https://www.webcamsdeasturias.com/asturias/parque-historico-de-navia/boal/boal/boal-desde-el-ayto-hd/92/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Cabrales": [
+  {
+   "nombre": "Arenas de Cabrales",
+   "url": "https://www.webcamsdeasturias.com/asturias/picos-de-europa/cabrales/arenas-de-cabrales/arenas-de-cabrales/172/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Bulnes de Arriba · El Castillo",
+   "url": "https://www.webcamsdeasturias.com/asturias/picos-de-europa/cabrales/bulnes/refugio-del-urriellu/135/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Camarmeña · Picu Urriellu · Naranjo de Bulnes",
+   "url": "https://www.webcamsdeasturias.com/asturias/picos-de-europa/cabrales/camarmena/picu-urriellu-naranjo-de-bulnes-hd/43/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Poncebos · Ruta del Cares",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/cabrales/poncebos/poncebos-ruta-del-cares-hd/22/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Sotres I",
+   "url": "https://www.webcamsdeasturias.com/asturias/picos-de-europa/cabrales/sotres/sotres-pandebano/81/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Sotres II",
+   "url": "https://www.webcamsdeasturias.com/asturias/picos-de-europa/cabrales/sotres/sotres-queseria-main-hd/160/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  }
+ ],
+ "Cangas de Onís": [
+  {
+   "nombre": "Puente Romano",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/cangas-de-onis/cangas-de-onis/puente-romano-hd/34/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "rio"
+   ]
+  },
+  {
+   "nombre": "Refugio de Vega de Ario · Marqués de Villaviciosa",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/cangas-de-onis/vega-de-ario/refugio-marques-villaviciosa-vega-ario/177/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Cangas de Onís desde Contranquil",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/cangas-de-onis/cangas-de-onis/cangas-de-onis-desde-contranquil/2/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Lagos de Covadonga · Lago Enol",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/cangas-de-onis/cangas-de-onis/lagos-de-covadonga-lago-enol-hd/159/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Mestas de Con",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/cangas-de-onis/mestas-de-con/mestas-de-con/35/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Panorámica de la Basílica de Covadonga",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/cangas-de-onis/covadonga/covadonga/80/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
   }
  ],
  "Carreño": [
   {
    "nombre": "Paseo Marítimo de Candás y Perlora",
    "url": "https://www.webcamsdeasturias.com/asturias/cabo-penas/carreno/candas/paseo-maritimo-de-candas/23/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Caso": [
+  {
+   "nombre": "Campo de Caso · El Campu",
+   "url": "https://www.webcamsdeasturias.com/asturias/valle-del-nalon/caso/campo-de-caso/campo-de-caso-hd/99/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Embalse de Tanes",
+   "url": "https://www.webcamsdeasturias.com/asturias/valle-del-nalon/caso/tanes/embalse-de-tanes-hd/103/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "rio"
+   ]
+  },
+  {
+   "nombre": "Panorámica de Orlé",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-del-nalon/caso/orle/panoramica-de-orle-hd/74/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Puerto de Tarna",
+   "url": "https://www.webcamsdeasturias.com/asturias/valle-del-nalon/caso/tarna/puerto-de-tarna-hd/147/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
   }
  ],
  "Castrillón": [
@@ -25,25 +228,68 @@
    "nombre": "Playa de Penarronda",
    "url": "https://www.webcamsdeasturias.com/asturias/oscos-eo/castropol/penarronda/playa-de-penarronda-hd/27/",
    "fuente": "Webcams de Asturias"
+  },
+  {
+   "nombre": "Castropol desde Ribadeo",
+   "url": "https://www.webcamsdeasturias.com/asturias/castropol/oscos-eo/castropol/castropol-desde-ribadeo/153/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion",
+    "puerto"
+   ]
+  },
+  {
+   "nombre": "Figueras · Puerto de As Figueiras",
+   "url": "https://www.webcamsdeasturias.com/asturias/occidente/castropol/figueras/puerto-de-as-figueiras-hd/28/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
   }
  ],
  "Colunga": [
   {
    "nombre": "Puerto de Lastres",
    "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-la-sidra/colunga/lastres/puerto-de-lastres-hd/49/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
   },
   {
    "nombre": "Muelle de Lastres",
    "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-la-sidra/colunga/llastres/puerto-muelle-de-lastres-hd/1/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
+  },
+  {
+   "nombre": "Mirador de San Roque de Lastres",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-la-sidra/colunga/lastres/mirador-de-san-roque-de-lastres-hd/4/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Sierra del Sueve · Picu Pienzu desde Huerres",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-la-sidra/colunga/huerres/picu-pienzu-sierra-del-sueve/12/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
   }
  ],
  "Cudillero": [
   {
    "nombre": "Cudillero desde el Ayuntamiento",
    "url": "https://www.webcamsdeasturias.com/asturias/comarca-vaqueira/cudillero/cudillero/plaza-de-la-marina-ayuntamiento/97/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
   },
   {
    "nombre": "Playa de la Concha de Artedo",
@@ -51,16 +297,61 @@
    "fuente": "Webcams de Asturias"
   }
  ],
+ "Degaña": [
+  {
+   "nombre": "Panorámica de Cerredo · Zarréu",
+   "url": "https://www.webcamsdeasturias.com/asturias/occidente/degana/panoramica-de-cerredo/cerredo-hd/76/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Panorámica de Degaña",
+   "url": "https://www.webcamsdeasturias.com/asturias/occidente/degana/degana/panoramica-degana-desde-ayto-hd/17/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "El Franco": [
+  {
+   "nombre": "Porcía · Playa de Porcia · Tapia",
+   "url": "https://www.webcamsdeasturias.com/asturias/parque-historico-del-navia/el-franco/porcia/playa-de-porcia-tapia-hd/171/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Puerto de Viavélez",
+   "url": "https://www.webcamsdeasturias.com/asturias/parque-historico-del-navia/el-franco/viavelez/viavelez-hd/70/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
+  }
+ ],
  "Gijón": [
   {
    "nombre": "Puerto Deportivo de Gijón",
    "url": "https://www.webcamsdeasturias.com/asturias/centro/gijon/gijon/puerto-deportivo-poniente-hd/41/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion",
+    "puerto"
+   ]
   },
   {
    "nombre": "Playa de Poniente · Fomento",
    "url": "https://www.webcamsdeasturias.com/asturias/centro/gijon/gijon/fomento-poniente/87/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
   },
   {
    "nombre": "San Lorenzo · La Escalerona",
@@ -75,7 +366,27 @@
   {
    "nombre": "San Lorenzo · El Tostaderu",
    "url": "https://www.webcamsdeasturias.com/asturias/centro/gijon/gijon/playa-de-san-lorenzo-el-tostaderu-hd/133/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Iglesia de San Pedro · Cimadevilla",
+   "url": "https://www.webcamsdeasturias.com/asturias/centro/gijon/gijon/iglesia-de-san-pedro-cimadevilla-hd/68/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Playa de San Lorenzo · Camping Gijón Costa Surf",
+   "url": "https://www.webcamsdeasturias.com/asturias/centro/gijon/costa/el-rinconin-san-lorenzo-hd/126/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion",
+    "rio"
+   ]
   }
  ],
  "Gozón": [
@@ -87,19 +398,178 @@
   {
    "nombre": "Muelle de Luanco",
    "url": "https://www.webcamsdeasturias.com/asturias/cabo-penas/gozon/luanco/muelle-de-luanco-hd/91/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion",
+    "puerto"
+   ]
+  },
+  {
+   "nombre": "Vista panorámica de Luanco",
+   "url": "https://www.webcamsdeasturias.com/asturias/cabo-penas/gozon/luanco/vista-panoramica-de-luanco/61/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
+  }
+ ],
+ "Grado": [
+  {
+   "nombre": "Ayuntamiento de Grado",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/grado/grado/grado-panoramica-desde-el-ayto/66/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Parque de Arriba · Parque Manuel Pedregal",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/grado/grado/parque-de-arriba-parque-manuel-pedregal/45/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Grandas de Salime": [
+  {
+   "nombre": "Grandas de Salime",
+   "url": "https://www.webcamsdeasturias.com/asturias/occidente/grandas-de-salime/grandas-de-salime/grandas-de-salime-hd/142/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Langreo": [
+  {
+   "nombre": "La Felguera",
+   "url": "https://www.webcamsdeasturias.com/asturias/cuenca-minera/langreo/la-felguera/la-felguera/72/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Laviana": [
+  {
+   "nombre": "Pola de Laviana",
+   "url": "https://www.webcamsdeasturias.com/asturias/valle-del-nalon/laviana/pola-de-laviana/parque-pola-de-laviana-hd/37/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Lena": [
+  {
+   "nombre": "Autopista del Huerna · Pajares · Campomanes",
+   "url": "https://www.webcamsdeasturias.com/asturias/autopista-del-huerna/pola-de-lena/campomanes/webcam-autopista-huerna/158/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "E.I Valgrande · Pajares: Cuitu Negro · Cueto Negro",
+   "url": "https://www.webcamsdeasturias.com/asturias/estacion-valgrande-pajares/lena/pajares/ei-valgrande-pajares-cuitu-negro-cueto-negro-hd/9/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "E.I Valgrande · Pajares: Cuitunigru · Las Ubiñas",
+   "url": "https://www.webcamsdeasturias.com/asturias/estacion-valgrande-pajares/lena/pajares/ei-valgrande-pajares-panoramica-cueto-negro-ubinas-hd/144/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "E.I Valgrande · Pajares: Taquillas",
+   "url": "https://www.webcamsdeasturias.com/asturias/estacion-valgrande-pajares/lena/pajares/ei-valgrande-pajares-taquillas-hd/165/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "E.I Valgrande · Pajares: Valle del Sol · 1700 metros",
+   "url": "https://www.webcamsdeasturias.com/asturias/estacion-valgrande-pajares/lena/pajares/ei-valgrande-pajares-valle-del-sol-1700-metros-hd/7/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "E.I Valgrande · Pajares: Valle del Sol · 1800 metros",
+   "url": "https://www.webcamsdeasturias.com/asturias/estacion-valgrande-pajares/lena/pajares/ei-valgrande-pajares-valle-del-sol-1800-metros-hd/123/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "E.I Valgrande · Pajares: Zona Baja",
+   "url": "https://www.webcamsdeasturias.com/asturias/montana-central/lena/estacion-valgrande-pajares/zona-baja-hd/180/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  }
+ ],
+ "Llanera": [
+  {
+   "nombre": "Posada de Llanera",
+   "url": "https://www.webcamsdeasturias.com/asturias/centro/llanera/posada-de-llanera/posada-de-llanera/14/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
   }
  ],
  "Llanes": [
   {
    "nombre": "Puerto de Llanes",
    "url": "https://www.webcamsdeasturias.com/asturias/oriente/llanes/llanes/puerto-de-llanes-hd/39/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
   },
   {
    "nombre": "Playa de Toró · Mirador",
    "url": "https://www.webcamsdeasturias.com/asturias/oriente/llanes/llanes/playa-de-toro-mirador-de-toro-hd/53/",
    "fuente": "Webcams de Asturias"
+  },
+  {
+   "nombre": "Playa del Sablón II · Los cubos de La Memoria",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/llanes/el-sablon/los-cubos-de-la-memoria-hd/201/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
+  },
+  {
+   "nombre": "Plaza Parres Sobrino, Llanes",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/llanes/llanes/plaza-parres-sobrino-llanes-hd/15/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Mieres": [
+  {
+   "nombre": "Mieres",
+   "url": "https://www.webcamsdeasturias.com/asturias/montana-central/mieres/mieres/mieres-hd/65/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
   }
  ],
  "Muros de Nalón": [
@@ -112,6 +582,50 @@
    "nombre": "Playa de Aguilar II",
    "url": "https://www.webcamsdeasturias.com/asturias/bajo-nalon/muros-de-nalon/aguilar/playa-de-aguilar-ii-hd/205/",
    "fuente": "Webcams de Asturias"
+  },
+  {
+   "nombre": "Barra de San Esteban de Pravia",
+   "url": "https://www.webcamsdeasturias.com/asturias/bajo-nalon/soto-del-barco/san-esteban-de-pravia/bocana-de-san-esteban-de-pravia-hd/161/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto",
+    "rio"
+   ]
+  },
+  {
+   "nombre": "Plaza del Marqués",
+   "url": "https://www.webcamsdeasturias.com/asturias/bajo-nalon/muros-de-nalon/muros-de-nalon/panoramica-muros-hd/175/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "San Esteban de Pravia",
+   "url": "https://www.webcamsdeasturias.com/asturias/bajo-nalon/muros-de-nalon/san-esteban-de-pravia/san-esteban-de-pravia-hd/174/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "rio"
+   ]
+  },
+  {
+   "nombre": "San Esteban de Pravia · Desembocadura del río Nalón",
+   "url": "https://www.webcamsdeasturias.com/asturias/bajo-nalon/muros-de-nalon/san-esteban-de-pravia/desembocadura-del-rio-nalon-hd/59/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto",
+    "rio"
+   ]
+  }
+ ],
+ "Nava": [
+  {
+   "nombre": "Plaza de Manuel Uría, Nava",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-la-sidra/nava/nava/plaza-de-manuel-uria-nava-hd/10/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
   }
  ],
  "Navia": [
@@ -123,12 +637,135 @@
   {
    "nombre": "Dársena de Navia",
    "url": "https://www.webcamsdeasturias.com/asturias/parque-historico-del-navia/navia/navia/darsena-de-navia-hd/69/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
   },
   {
    "nombre": "Playa de Frejulfe",
    "url": "https://www.webcamsdeasturias.com/asturias/parque-historico-del-navia/navia/navia/playa-de-frejulfe-hd/98/",
    "fuente": "Webcams de Asturias"
+  }
+ ],
+ "Onís": [
+  {
+   "nombre": "Benia de Onís · Plaza del Ayto de Onís",
+   "url": "https://www.webcamsdeasturias.com/asturias/picos-de-europa/onis/benia-de-onis/plaza-del-ayto-de-onis/52/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Oviedo": [
+  {
+   "nombre": "La Corredoria · Panorámica del Naranco desde Oviedo",
+   "url": "https://www.webcamsdeasturias.com/asturias/oviedo/naranco/hotel-angel/panoramica-naranco-hd/178/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Oviedo desde el Naranco",
+   "url": "https://www.webcamsdeasturias.com/asturias/centro/oviedo/oviedo/oviedo-desde-el-naranco/60/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Parres": [
+  {
+   "nombre": "Arriondas · Panorámica del Rio Sella · Jaire Aventura",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/parres/arriondas/panoramica-del-rio-sella-hd/83/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "rio"
+   ]
+  },
+  {
+   "nombre": "Panorámica de Arriondas",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/parres/arriondas/panoramica-de-arriondas/11/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "rio"
+   ]
+  }
+ ],
+ "Peñamellera Alta": [
+  {
+   "nombre": "Niserias · Embalse de Niserias",
+   "url": "https://www.webcamsdeasturias.com/asturias/picos-de-europa/penamellera-alta/niserias/embalse-de-casa-julian/51/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "rio"
+   ]
+  }
+ ],
+ "Piloña": [
+  {
+   "nombre": "Infiesto",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-del-sueve/pilona/infiesto/infiesto/124/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Ponga": [
+  {
+   "nombre": "San Juan de Beleño (San Xuan)",
+   "url": "https://www.webcamsdeasturias.com/asturias/oriente/ponga/san-juan-de-beleno/san-juan-de-beleno-san-xuan-picu-tiatordos/90/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Pravia": [
+  {
+   "nombre": "Panorámica de Somao",
+   "url": "https://www.webcamsdeasturias.com/asturias/bajo-nalon/pravia/somao/panoramica-de-somao-hd/136/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Proaza": [
+  {
+   "nombre": "Proacina · Peña de Caranga · Escuela de escalada de Quirós",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/proaza/proacina/pena-de-caranga-escuela-de-escalada-de-quiros/173/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  },
+  {
+   "nombre": "Proaza",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/proaza/proaza/proaza-hd/31/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Quirós": [
+  {
+   "nombre": "Panorámica de Bárzana",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/quiros/barzana/panoramica-de-barzana-hd/86/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
   }
  ],
  "Ribadedeva": [
@@ -162,31 +799,145 @@
   {
    "nombre": "Paseo Princesa Letizia",
    "url": "https://www.webcamsdeasturias.com/asturias/oriente/ribadesella/ribadesella/paseo-princesa-letizia-hd/32/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto",
+    "rio"
+   ]
+  }
+ ],
+ "Salas": [
+  {
+   "nombre": "Panorámica de Salas",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-vaqueira/salas/salas/panoramica-de-salas-hd/73/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "San Martín de Oscos": [
+  {
+   "nombre": "San Martín de Oscos",
+   "url": "https://www.webcamsdeasturias.com/asturias/oscos-eo/san-martin-de-oscos/san-martin-de-oscos/san-martin-de-oscos-hd/139/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  }
+ ],
+ "San Martín del Rey Aurelio": [
+  {
+   "nombre": "Sotrondio",
+   "url": "https://www.webcamsdeasturias.com/asturias/valle-del-nalon/san-martin-del-rey-aurelio/sotrondio/sotrondio/167/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Santa Eulalia de Oscos": [
+  {
+   "nombre": "Santa Eulalia de Oscos",
+   "url": "https://www.webcamsdeasturias.com/asturias/oscos-eo/santa-eulalia-de-oscos/santa-eulalia-de-oscos/santa-eulalia-de-oscos-hd/157/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Santo Adriano": [
+  {
+   "nombre": "Tuñón · Villanueva · Senda del Oso",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/santo-adriano/tunon/villanueva-senda-del-oso/112/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Sobrescobio": [
+  {
+   "nombre": "Rioseco",
+   "url": "https://www.webcamsdeasturias.com/asturias/valle-del-nalon/sobrescobio/rioseco/rioseco-desde-el-ayto/152/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Soto de Agües · Ruta del Alba (Redes)",
+   "url": "https://www.webcamsdeasturias.com/asturias/valle-del-nalon/sobrescobio/soto-de-agues/soto-de-agues-ruta-del-alba-hd/150/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Somiedo": [
+  {
+   "nombre": "Pola de Somiedo",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/somiedo/somiedo/pola-de-somiedo-hd/113/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Caunedo",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/somiedo/somiedo/somiedo-caunedo-hd/106/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
   }
  ],
  "Soto del Barco": [
   {
    "nombre": "Playa de Los Quebrantos",
    "url": "https://www.webcamsdeasturias.com/asturias/bajo-nalon/soto-del-barco/san-juan-del-arena/playa-de-los-quebrantos-hd/149/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "rio"
+   ]
   },
   {
    "nombre": "Muelle de San Juan de la Arena",
    "url": "https://www.webcamsdeasturias.com/asturias/bajo-nalon/soto-del-barco/san-juan-del-arena/muelle-de-san-juan-de-la-arena-hd/38/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
+  },
+  {
+   "nombre": "Panorámica de San Juan de la Arena",
+   "url": "https://www.webcamsdeasturias.com/asturias/bajo-nalon/soto-del-barco/san-juan-de-la-arena/panoramica-san-juan-de-la-arena-hd/209/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
   }
  ],
  "Tapia de Casariego": [
   {
    "nombre": "Puerto de Tapia",
    "url": "https://www.webcamsdeasturias.com/asturias/oscos-eo/tapia-de-casariego/tapia-de-casariego/puerto-de-tapia-de-casariego-hd/33/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
   },
   {
    "nombre": "Puerto de Tapia II",
    "url": "https://www.webcamsdeasturias.com/asturias/oscos-eo/tapia-de-casariego/tapia-de-casariego/puerto-de-tapia-de-casariego-II-hd/36/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
   },
   {
    "nombre": "Playa de Anguileiro o La Grande",
@@ -196,19 +947,68 @@
   {
    "nombre": "Playa de El Murallón",
    "url": "https://www.webcamsdeasturias.com/asturias/occidente/tapia-de-casariego/tapia/playa-la-grande-hd/140/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  },
+  {
+   "nombre": "Playa de Serantes",
+   "url": "https://www.webcamsdeasturias.com/asturias/occidente/tapia-de-casariego/tapia/playa-de-serantes-hd/141/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Taramundi": [
+  {
+   "nombre": "Taramundi",
+   "url": "https://www.webcamsdeasturias.com/asturias/oscos-eo/taramundi/taramundi/taramundi-hd/62/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
+  }
+ ],
+ "Teverga": [
+  {
+   "nombre": "Panorámica de Teverga",
+   "url": "https://www.webcamsdeasturias.com/asturias/camin-real-de-la-mesa/teverga/teverga/panoramica-de-teverga-hd/48/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana"
+   ]
+  }
+ ],
+ "Tineo": [
+  {
+   "nombre": "Panorámica de Tineo",
+   "url": "https://www.webcamsdeasturias.com/asturias/occidente/tineo/tineo/panoramica-de-tineo/19/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
   }
  ],
  "Valdés": [
   {
    "nombre": "Panorámica de Luarca",
    "url": "https://www.webcamsdeasturias.com/asturias/comarca-vaqueira/valdes/luarca/panoramica-puerto-luarca-hd/193/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
   },
   {
    "nombre": "Acantilados de Luarca",
    "url": "https://www.webcamsdeasturias.com/asturias/occidente/valdes/luarca/acantilados-de-luarca-valdes-hd/115/",
-   "fuente": "Webcams de Asturias"
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
   },
   {
    "nombre": "Playa de Cadavedo",
@@ -226,6 +1026,41 @@
    "nombre": "Rodiles III · Barra",
    "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-la-sidra/villaviciosa/rodiles/playa-de-rodiles-hd/120/",
    "fuente": "Webcams de Asturias"
+  },
+  {
+   "nombre": "Puerto de Tazones",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-la-sidra/villaviciosa/tazones/puerto-de-tazones-hd/50/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
+  },
+  {
+   "nombre": "Quintes · Playa España",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-la-sidra/villaviciosa/quintes/playa-espana-hd/164/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "puerto"
+   ]
+  },
+  {
+   "nombre": "Ayto · Plaza´l Güevu",
+   "url": "https://www.webcamsdeasturias.com/asturias/comarca-de-la-sidra/villaviciosa/villaviciosa/villaviciosa-ayuntamiento-plaza-guevu-hd/75/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "poblacion"
+   ]
+  }
+ ],
+ "Villayón": [
+  {
+   "nombre": "Panorámica de Oneta",
+   "url": "https://www.webcamsdeasturias.com/asturias/parque-historico-del-navia/villayon/villayon/villayon-hd/30/",
+   "fuente": "Webcams de Asturias",
+   "categorias": [
+    "montana",
+    "poblacion"
+   ]
   }
  ]
 }
