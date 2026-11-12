@@ -43,11 +43,14 @@ function hoy(c) {
 }
 
 function iniciarMapa() {
-  mapa = L.map("mapa", { zoomControl: true, attributionControl: true }).setView(CENTRO, 9);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>',
-    subdomains: "abcd", maxZoom: 18,
+  mapa = L.map("mapa", { zoomControl: false, attributionControl: true }).setView(CENTRO, 9);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 18,
   }).addTo(mapa);
+  const ajustarEtiquetas = () => document.getElementById("mapa").classList.toggle("cerca", mapa.getZoom() >= 11);
+  mapa.on("zoomend", ajustarEtiquetas);
+  ajustarEtiquetas();
   mapa.on("click", () => cerrarFicha());
 }
 
@@ -61,7 +64,7 @@ function pintarMarcas() {
     const temp = d && d.max != null ? `${Math.round(d.max)}°` : "–";
     const icono = L.divIcon({
       className: "",
-      html: `<div class="marca${d ? "" : " sin-datos"}"><span class="pildora">${esc(nombreMostrado(c))} · ${temp}</span><span class="pata"></span></div>`,
+      html: `<div class="marca${d ? "" : " sin-datos"}"><span class="pildora"><span class="etiqueta">${esc(nombreMostrado(c))} </span>${temp}</span><span class="pata"></span></div>`,
       iconSize: null,
     });
     const marca = L.marker([c.lat, c.lon], { icon: icono, title: nombreMostrado(c) }).addTo(mapa);
@@ -69,7 +72,7 @@ function pintarMarcas() {
     marcas.set(c.codigo, marca);
     grupo.push([c.lat, c.lon]);
   }
-  if (grupo.length && !activa) mapa.fitBounds(grupo, { padding: [30, 30] });
+  if (grupo.length && !activa) mapa.fitBounds(grupo, { padding: [30, 90], maxZoom: 10 });
 }
 
 function marcarActiva(codigo) {

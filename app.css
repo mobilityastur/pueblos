@@ -18,10 +18,14 @@ html, body { margin: 0; height: 100%; background: var(--noche); color: var(--tex
 body { font: 16px/1.4 Barlow, system-ui, -apple-system, sans-serif; overflow: hidden; }
 
 #mapa { position: fixed; inset: 0; background: #0E1E2A; }
+/* Mapa base oscuro sobre tiles de OpenStreetMap */
+#mapa .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.72) contrast(.95) saturate(.7); }
+#mapa .etiqueta { display: none; }
+#mapa.cerca .etiqueta { display: inline; }
 .leaflet-container { font: inherit; background: #0E1E2A; }
 .leaflet-control-attribution { background: rgba(11, 22, 32, .7) !important; color: var(--suave) !important; }
 .leaflet-control-attribution a { color: var(--azul-cantabrico) !important; }
-.leaflet-control-zoom a { background: var(--pizarra) !important; color: var(--texto) !important; border-color: #2B3F4D !important; }
+.leaflet-control-zoom { display: none; }
 
 /* Marcadores: etiqueta con la temperatura máxima de hoy */
 .marca {
@@ -32,7 +36,7 @@ body { font: 16px/1.4 Barlow, system-ui, -apple-system, sans-serif; overflow: hi
 .marca .pildora {
   background: var(--pizarra); color: var(--texto);
   border: 2px solid var(--azul-cantabrico); border-radius: 999px;
-  padding: 3px 9px; font-weight: 600; font-size: 14px; white-space: nowrap;
+  padding: 2px 7px; font-weight: 600; font-size: 13px; white-space: nowrap;
   box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
   transition: transform .2s ease, background .2s ease;
 }
