@@ -20,8 +20,8 @@ body { font: 16px/1.4 Barlow, system-ui, -apple-system, sans-serif; overflow: hi
 #mapa { position: fixed; inset: 0; background: #0E1E2A; }
 /* Mapa base oscuro sobre tiles de OpenStreetMap */
 #mapa .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.72) contrast(.95) saturate(.7); }
-#mapa .etiqueta { display: none; }
-#mapa.cerca .etiqueta { display: inline; }
+#mapa .compacta .etiqueta { display: none; }
+#mapa .compacta .pildora { padding: 1px 6px; font-size: 12px; border-width: 1.5px; }
 .leaflet-container { font: inherit; background: #0E1E2A; }
 .leaflet-control-attribution { background: rgba(11, 22, 32, .7) !important; color: var(--suave) !important; }
 .leaflet-control-attribution a { color: var(--azul-cantabrico) !important; }

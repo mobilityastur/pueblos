@@ -69,9 +69,19 @@ def con_reintentos(url, clave):
             time.sleep(ESPERA_429_S * (intento + 1))
 
 
+ARTICULOS = {"el", "la", "los", "las", "l"}
+
+
 def normalizar(texto):
+    """'Las Regueras', 'Regueras (Las)' y 'Regueras, Las' quedan igual: 'regueras'."""
     sin_tildes = unicodedata.normalize("NFD", texto or "").encode("ascii", "ignore").decode()
-    return re.sub(r"[^a-z0-9]+", " ", sin_tildes.lower()).strip()
+    palabras = re.sub(r"[^a-z0-9]+", " ", sin_tildes.lower()).split()
+    return " ".join(w for w in palabras if w not in ARTICULOS)
+
+
+def claves_nombre(nombre):
+    """AEMET puede dar nombres dobles ('Gijón/Xixón'): vale cualquiera de las partes."""
+    return {normalizar(parte) for parte in re.split(r"[/]", nombre or "") if parte.strip()}
 
 
 def parsear_coordenada(valor):
@@ -160,10 +170,29 @@ def main():
     else:
         errores.append("Falta el secreto AEMET_API_KEY")
 
+    # Emparejar cada concejo con su código real de AEMET/INE por el nombre
+    # (los códigos INE no siguen el orden alfabético actual).
+    codigos = dict(cache_previo.get("_codigos") or {})
+    if maestro:
+        por_nombre = {}
+        for cod, m in maestro.items():
+            for k in claves_nombre(m.get("nombre")):
+                por_nombre[k] = cod
+        for c in concejos_base:
+            cod = next((por_nombre[k] for k in claves_nombre(c["nombre"]) if k in por_nombre), None)
+            if cod:
+                codigos[c["nombre"]] = cod
+            else:
+                errores.append(f"{c['nombre']}: no aparece en el maestro de AEMET")
+        if len(set(codigos.values())) != len(codigos):
+            errores.append("hay concejos con el mismo código: revisar nombres")
+
     # 2. Predicción por concejo
     resultado = []
     for c in concejos_base:
-        codigo = c["codigo"]
+        codigo = codigos.get(c["nombre"])
+        if not codigo:
+            continue  # sin código fiable preferimos no pintarlo antes que pintarlo mal
         ficha = maestro.get(codigo, {})
         lat = parsear_coordenada(ficha.get("latitud")) or c.get("lat")
         lon = parsear_coordenada(ficha.get("longitud")) or c.get("lon")
@@ -199,6 +228,7 @@ def main():
     }
     (salida / "estado.json").write_text(json.dumps(estado, ensure_ascii=False, indent=1), encoding="utf-8")
     cache = {r["codigo"]: {"tiempo": r["tiempo"]} for r in resultado if r["tiempo"]}
+    cache["_codigos"] = codigos
     (salida / "cache.json").write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
     print(f"{len(resultado)} concejos, {sum(1 for r in resultado if r['tiempo'])} con previsión, {len(errores)} avisos")
     return 0

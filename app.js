@@ -48,9 +48,7 @@ function iniciarMapa() {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom: 18,
   }).addTo(mapa);
-  const ajustarEtiquetas = () => document.getElementById("mapa").classList.toggle("cerca", mapa.getZoom() >= 11);
-  mapa.on("zoomend", ajustarEtiquetas);
-  ajustarEtiquetas();
+  mapa.on("zoomend moveend", colocarEtiquetas);
   mapa.on("click", () => cerrarFicha());
 }
 
@@ -73,6 +71,29 @@ function pintarMarcas() {
     grupo.push([c.lat, c.lon]);
   }
   if (grupo.length && !activa) mapa.fitBounds(grupo, { padding: [30, 90], maxZoom: 10 });
+  requestAnimationFrame(colocarEtiquetas);
+}
+
+// Muestra el nombre en cada marcador solo si cabe sin pisar a otro ya colocado;
+// si no, se queda con la temperatura. Primero los que tienen webcam.
+function colocarEtiquetas() {
+  if (!estado) return;
+  const orden = [...estado.concejos].sort((a, b) => (b.webcams || []).length - (a.webcams || []).length);
+  const ocupados = [];
+  const choca = (r) => ocupados.some((o) => r.left < o.right + 4 && r.right > o.left - 4 && r.top < o.bottom + 2 && r.bottom > o.top - 2);
+  for (const c of orden) {
+    const m = marcas.get(c.codigo);
+    const el = m && m.getElement() && m.getElement().querySelector(".marca");
+    if (!el) continue;
+    el.classList.remove("compacta");
+    const pild = el.querySelector(".pildora");
+    let r = pild.getBoundingClientRect();
+    if (choca(r)) {
+      el.classList.add("compacta");
+      r = pild.getBoundingClientRect();
+    }
+    ocupados.push(r);
+  }
 }
 
 function marcarActiva(codigo) {
