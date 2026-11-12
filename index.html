@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ast">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pueblos de Asturias</title>
+<meta name="description" content="Previsión del tiempo y webcams en directo de los 78 concejos de Asturias.">
+<meta name="theme-color" content="#0B1620">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pueblos">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div id="mapa" aria-label="Mapa de concejos de Asturias"></div>
+
+<header class="cabecera">
+  <h1>Pueblos <em>d'Asturies</em></h1>
+  <p id="estado-datos" class="sub">Cargando previsión…</p>
+</header>
+
+<section id="ficha" class="ficha" hidden aria-live="polite"></section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

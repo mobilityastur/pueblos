@@ -1,0 +1,314 @@
+[
+ {
+  "codigo": "33001",
+  "nombre": "Allande"
+ },
+ {
+  "codigo": "33002",
+  "nombre": "Aller"
+ },
+ {
+  "codigo": "33003",
+  "nombre": "Amieva"
+ },
+ {
+  "codigo": "33004",
+  "nombre": "Avilés"
+ },
+ {
+  "codigo": "33005",
+  "nombre": "Belmonte de Miranda"
+ },
+ {
+  "codigo": "33006",
+  "nombre": "Bimenes"
+ },
+ {
+  "codigo": "33007",
+  "nombre": "Boal"
+ },
+ {
+  "codigo": "33008",
+  "nombre": "Cabrales"
+ },
+ {
+  "codigo": "33009",
+  "nombre": "Cabranes"
+ },
+ {
+  "codigo": "33010",
+  "nombre": "Candamo"
+ },
+ {
+  "codigo": "33011",
+  "nombre": "Cangas de Onís"
+ },
+ {
+  "codigo": "33012",
+  "nombre": "Cangas del Narcea"
+ },
+ {
+  "codigo": "33013",
+  "nombre": "Caravia"
+ },
+ {
+  "codigo": "33014",
+  "nombre": "Carreño"
+ },
+ {
+  "codigo": "33015",
+  "nombre": "Caso"
+ },
+ {
+  "codigo": "33016",
+  "nombre": "Castrillón"
+ },
+ {
+  "codigo": "33017",
+  "nombre": "Castropol"
+ },
+ {
+  "codigo": "33018",
+  "nombre": "Coaña"
+ },
+ {
+  "codigo": "33019",
+  "nombre": "Colunga"
+ },
+ {
+  "codigo": "33020",
+  "nombre": "Corvera de Asturias"
+ },
+ {
+  "codigo": "33021",
+  "nombre": "Cudillero"
+ },
+ {
+  "codigo": "33022",
+  "nombre": "Degaña"
+ },
+ {
+  "codigo": "33023",
+  "nombre": "El Franco"
+ },
+ {
+  "codigo": "33024",
+  "nombre": "Gijón"
+ },
+ {
+  "codigo": "33025",
+  "nombre": "Gozón"
+ },
+ {
+  "codigo": "33026",
+  "nombre": "Grado"
+ },
+ {
+  "codigo": "33027",
+  "nombre": "Grandas de Salime"
+ },
+ {
+  "codigo": "33028",
+  "nombre": "Ibias"
+ },
+ {
+  "codigo": "33029",
+  "nombre": "Illano"
+ },
+ {
+  "codigo": "33030",
+  "nombre": "Illas"
+ },
+ {
+  "codigo": "33031",
+  "nombre": "Langreo"
+ },
+ {
+  "codigo": "33032",
+  "nombre": "Las Regueras"
+ },
+ {
+  "codigo": "33033",
+  "nombre": "Laviana"
+ },
+ {
+  "codigo": "33034",
+  "nombre": "Lena"
+ },
+ {
+  "codigo": "33035",
+  "nombre": "Llanera"
+ },
+ {
+  "codigo": "33036",
+  "nombre": "Llanes"
+ },
+ {
+  "codigo": "33037",
+  "nombre": "Mieres"
+ },
+ {
+  "codigo": "33038",
+  "nombre": "Morcín"
+ },
+ {
+  "codigo": "33039",
+  "nombre": "Muros de Nalón"
+ },
+ {
+  "codigo": "33040",
+  "nombre": "Nava"
+ },
+ {
+  "codigo": "33041",
+  "nombre": "Navia"
+ },
+ {
+  "codigo": "33042",
+  "nombre": "Noreña"
+ },
+ {
+  "codigo": "33043",
+  "nombre": "Onís"
+ },
+ {
+  "codigo": "33044",
+  "nombre": "Oviedo"
+ },
+ {
+  "codigo": "33045",
+  "nombre": "Parres"
+ },
+ {
+  "codigo": "33046",
+  "nombre": "Peñamellera Alta"
+ },
+ {
+  "codigo": "33047",
+  "nombre": "Peñamellera Baja"
+ },
+ {
+  "codigo": "33048",
+  "nombre": "Pesoz"
+ },
+ {
+  "codigo": "33049",
+  "nombre": "Piloña"
+ },
+ {
+  "codigo": "33050",
+  "nombre": "Ponga"
+ },
+ {
+  "codigo": "33051",
+  "nombre": "Pravia"
+ },
+ {
+  "codigo": "33052",
+  "nombre": "Proaza"
+ },
+ {
+  "codigo": "33053",
+  "nombre": "Quirós"
+ },
+ {
+  "codigo": "33054",
+  "nombre": "Ribadedeva"
+ },
+ {
+  "codigo": "33055",
+  "nombre": "Ribadesella"
+ },
+ {
+  "codigo": "33056",
+  "nombre": "Ribera de Arriba"
+ },
+ {
+  "codigo": "33057",
+  "nombre": "Riosa"
+ },
+ {
+  "codigo": "33058",
+  "nombre": "Salas"
+ },
+ {
+  "codigo": "33059",
+  "nombre": "San Martín de Oscos"
+ },
+ {
+  "codigo": "33060",
+  "nombre": "San Martín del Rey Aurelio"
+ },
+ {
+  "codigo": "33061",
+  "nombre": "San Tirso de Abres"
+ },
+ {
+  "codigo": "33062",
+  "nombre": "Santa Eulalia de Oscos"
+ },
+ {
+  "codigo": "33063",
+  "nombre": "Santo Adriano"
+ },
+ {
+  "codigo": "33064",
+  "nombre": "Sariego"
+ },
+ {
+  "codigo": "33065",
+  "nombre": "Siero"
+ },
+ {
+  "codigo": "33066",
+  "nombre": "Sobrescobio"
+ },
+ {
+  "codigo": "33067",
+  "nombre": "Somiedo"
+ },
+ {
+  "codigo": "33068",
+  "nombre": "Soto del Barco"
+ },
+ {
+  "codigo": "33069",
+  "nombre": "Tapia de Casariego"
+ },
+ {
+  "codigo": "33070",
+  "nombre": "Taramundi"
+ },
+ {
+  "codigo": "33071",
+  "nombre": "Teverga"
+ },
+ {
+  "codigo": "33072",
+  "nombre": "Tineo"
+ },
+ {
+  "codigo": "33073",
+  "nombre": "Valdés"
+ },
+ {
+  "codigo": "33074",
+  "nombre": "Vegadeo"
+ },
+ {
+  "codigo": "33075",
+  "nombre": "Villanueva de Oscos"
+ },
+ {
+  "codigo": "33076",
+  "nombre": "Villaviciosa"
+ },
+ {
+  "codigo": "33077",
+  "nombre": "Villayón"
+ },
+ {
+  "codigo": "33078",
+  "nombre": "Yernes y Tameza"
+ }
+]

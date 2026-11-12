@@ -1,0 +1,10 @@
+{
+  "name": "Pueblos de Asturias",
+  "short_name": "Pueblos",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0B1620",
+  "theme_color": "#0B1620",
+  "lang": "ast",
+  "icons": []
+}
