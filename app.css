@@ -1,7 +1,8 @@
 :root {
   --noche: #0B1620;
   --pizarra: #1B2A36;
-  --verde-valle: #3E7A5A;
+  --hundido: #142230;
+  --borde: #26394A;
   --azul-cantabrico: #3FA7C9;
   --ambar: #F2B33D;
   --niebla: #B8C4CC;
@@ -14,106 +15,92 @@
   --cielo-verde: linear-gradient(160deg, #6FB08A 0%, #2F6B4D 60%, #173A2A 100%);
 }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; background: var(--noche); color: var(--texto); }
-body { font: 16px/1.4 Barlow, system-ui, -apple-system, sans-serif; overflow: hidden; }
+html, body { margin: 0; background: var(--noche); color: var(--texto); }
+body { font: 16px/1.4 Barlow, system-ui, -apple-system, sans-serif; padding-bottom: env(safe-area-inset-bottom); }
+button { font: inherit; color: inherit; }
 
-#mapa { position: fixed; inset: 0; background: #0E1E2A; }
-/* Mapa base oscuro sobre tiles de OpenStreetMap */
-#mapa .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.72) contrast(.95) saturate(.7); }
-#mapa .compacta .etiqueta { display: none; }
-#mapa .compacta .pildora { padding: 1px 6px; font-size: 12px; border-width: 1.5px; }
-.leaflet-container { font: inherit; background: #0E1E2A; }
-.leaflet-control-attribution { background: rgba(11, 22, 32, .7) !important; color: var(--suave) !important; }
-.leaflet-control-attribution a { color: var(--azul-cantabrico) !important; }
-.leaflet-control-zoom { display: none; }
-
-/* Marcadores: etiqueta con la temperatura máxima de hoy */
-.marca {
-  transform: translate(-50%, -100%);
-  display: flex; flex-direction: column; align-items: center; gap: 2px;
-  cursor: pointer;
-}
-.marca .pildora {
-  background: var(--pizarra); color: var(--texto);
-  border: 2px solid var(--azul-cantabrico); border-radius: 999px;
-  padding: 2px 7px; font-weight: 600; font-size: 13px; white-space: nowrap;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
-  transition: transform .2s ease, background .2s ease;
-}
-.marca .pata { width: 2px; height: 8px; background: var(--azul-cantabrico); }
-.marca:hover .pildora, .marca.activa .pildora { transform: scale(1.12); background: var(--azul-cantabrico); color: var(--noche); }
-.marca.sin-datos .pildora { border-color: #50606B; color: var(--suave); }
-
-/* Cabecera flotante */
-.cabecera {
-  position: fixed; top: max(14px, env(safe-area-inset-top)); left: 14px; right: 14px;
-  pointer-events: none; z-index: 500;
-}
-.cabecera h1 {
-  margin: 0; font-family: Fraunces, Georgia, serif; font-weight: 800; font-size: 30px; line-height: 1;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, .6);
-}
+.cabecera { padding: max(16px, env(safe-area-inset-top)) 16px 6px; }
+.cabecera h1 { margin: 0; font: 800 30px/1 Fraunces, Georgia, serif; }
 .cabecera h1 em { color: var(--ambar); font-style: italic; font-weight: 600; }
-.cabecera .sub { margin: 4px 0 0; color: var(--niebla); font-size: 14px; text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+.cabecera .sub { margin: 4px 0 0; color: var(--suave); font-size: 14px; }
+
+/* Mapa */
+.lienzo { position: relative; padding: 4px 6px 0; }
+.modos { display: inline-flex; margin: 6px 10px 4px; background: var(--hundido); border-radius: 999px; padding: 3px; border: 1px solid var(--borde); }
+.modos button { border: 0; background: none; padding: 6px 14px; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--suave); cursor: pointer; }
+.modos button[aria-selected="true"] { background: var(--azul-cantabrico); color: var(--noche); }
+.mapa { position: relative; touch-action: none; user-select: none; -webkit-user-select: none; }
+.mapa svg { display: block; width: 100%; height: auto; aspect-ratio: 1000 / 420; overflow: hidden; }
+.concejo { stroke: var(--noche); stroke-width: .9; vector-effect: non-scaling-stroke; cursor: pointer; transition: fill .4s ease, opacity .2s ease; }
+.concejo:hover { opacity: .85; }
+.concejo.activo { stroke: #fff; stroke-width: 2.4; }
+.concejo.apagado { opacity: .25; }
+.rotulo { pointer-events: none; fill: #fff; text-anchor: middle; dominant-baseline: middle; font-weight: 700;
+  paint-order: stroke; stroke: rgba(11,22,32,.75); stroke-linejoin: round; }
+.rotulo .nombre { font-weight: 600; }
+.reencuadrar { position: absolute; right: 8px; bottom: 8px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--borde); background: var(--pizarra); font-size: 18px; cursor: pointer; }
+
+.leyenda { display: flex; align-items: center; gap: 8px; margin: 6px 10px 0; font-size: 12px; color: var(--suave); flex-wrap: wrap; }
+.leyenda .barra { flex: 1; min-width: 120px; height: 8px; border-radius: 999px; }
+.leyenda .chip { display: inline-flex; align-items: center; gap: 5px; }
+.leyenda .chip i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+/* Lista */
+.listado { padding: 14px 12px 24px; }
+#buscar { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--borde); background: var(--hundido); color: var(--texto); font: inherit; }
+#buscar::placeholder { color: var(--suave); }
+#lista { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 6px; }
+#lista button { width: 100%; display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 12px; text-align: left;
+  background: var(--pizarra); border: 0; border-radius: 14px; padding: 10px 14px; cursor: pointer; }
+#lista .punto { width: 12px; height: 12px; border-radius: 4px; }
+#lista .nom b { display: block; font-weight: 600; }
+#lista .nom small { color: var(--suave); }
+#lista .dato { text-align: right; font-weight: 700; font-size: 17px; white-space: nowrap; }
+#lista .dato small { display: block; font-weight: 500; font-size: 12px; color: var(--suave); }
+.creditos { color: var(--suave); font-size: 12px; margin-top: 16px; }
+@media (min-width: 720px) { #lista { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { #lista { grid-template-columns: repeat(3, 1fr); } }
 
 /* Ficha tipo postal */
+.velo { position: fixed; inset: 0; background: rgba(4, 10, 15, .55); z-index: 50; }
 .ficha {
-  position: fixed; left: 10px; right: 10px; bottom: max(10px, env(safe-area-inset-bottom));
-  max-height: 72vh; overflow: auto; z-index: 600;
+  position: fixed; left: 8px; right: 8px; bottom: max(8px, env(safe-area-inset-bottom));
+  max-height: 80vh; overflow: auto; z-index: 60;
   border-radius: 22px; padding: 0 0 18px;
   background: var(--pizarra); box-shadow: 0 -10px 40px rgba(0,0,0,.55);
   animation: subir .35s cubic-bezier(.2,.8,.2,1);
 }
 @keyframes subir { from { transform: translateY(40px); opacity: 0; } to { transform: none; opacity: 1; } }
-.ficha .portada {
-  position: relative; border-radius: 22px 22px 0 0; padding: 22px 20px 74px; color: #fff; min-height: 170px;
-  background: var(--cielo-verde);
-  overflow: hidden;
-}
+.ficha .portada { position: relative; border-radius: 22px 22px 0 0; padding: 22px 20px 74px; color: #fff; min-height: 170px; background: var(--cielo-verde); overflow: hidden; }
 .ficha .portada::after {
-  /* sello de correos */
-  content: "ASTURIES"; position: absolute; right: 16px; top: 16px; transform: rotate(6deg);
+  content: "ASTURIES"; position: absolute; right: 54px; top: 18px; transform: rotate(6deg);
   border: 2px dashed rgba(255,255,255,.55); border-radius: 6px; padding: 4px 8px;
   font: 700 11px/1 Barlow, sans-serif; letter-spacing: .18em; opacity: .85;
 }
 .ficha .portada.sol { background: var(--cielo-sol); }
-.ficha .portada.nube { background: var(--cielo-nube); }
-.ficha .portada.lluvia { background: var(--cielo-lluvia); }
+.ficha .portada.nube, .ficha .portada.niebla { background: var(--cielo-nube); }
+.ficha .portada.lluvia, .ficha .portada.tormenta, .ficha .portada.nieve { background: var(--cielo-lluvia); }
 .ficha .portada.noche { background: var(--cielo-noche); }
-.ficha .portada.verde { background: var(--cielo-verde); }
-.ficha h2 { margin: 0; font: 800 34px/1.05 Fraunces, Georgia, serif; text-shadow: 0 2px 12px rgba(0,0,0,.3); }
+.ficha h2 { margin: 0; font: 800 34px/1.05 Fraunces, Georgia, serif; text-shadow: 0 2px 12px rgba(0,0,0,.3); padding-right: 40px; }
 .ficha .concejo-es { margin: 2px 0 0; font-size: 14px; opacity: .85; }
 .ficha .hoy { position: absolute; left: 20px; bottom: 16px; display: flex; align-items: baseline; gap: 10px; }
 .ficha .hoy .grados { font: 800 52px/1 Fraunces, Georgia, serif; }
 .ficha .hoy .cielo { font-size: 17px; font-weight: 500; }
-.ficha .cerrar {
-  position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,.25); color: #fff; border: 0;
-  width: 34px; height: 34px; border-radius: 50%; font-size: 18px; cursor: pointer; display: none;
-}
-
+.ficha .cerrar { position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(0,0,0,.28); color: #fff; border: 0; width: 34px; height: 34px; border-radius: 50%; font-size: 20px; cursor: pointer; }
 .ficha .cuerpo { padding: 14px 16px 0; }
 .ficha .semana { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 0 0 14px; }
-.ficha .dia {
-  background: var(--tarjeta, #223645); border-radius: 14px; padding: 8px 4px; text-align: center; font-size: 13px;
-}
+.ficha .dia { background: #223645; border-radius: 14px; padding: 8px 4px; text-align: center; font-size: 13px; }
 .ficha .dia b { display: block; color: var(--suave); font-weight: 600; text-transform: capitalize; }
 .ficha .dia .max { display: block; font-weight: 700; font-size: 17px; margin-top: 4px; }
 .ficha .dia .min { display: block; color: var(--suave); }
 .ficha .dia .lluvia { display: block; color: var(--azul-cantabrico); font-size: 12px; margin-top: 2px; }
-
 .ficha h3 { margin: 16px 0 8px; font: 600 13px/1 Barlow, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--suave); }
-.ficha .cam {
-  display: flex; justify-content: space-between; align-items: center; gap: 10px;
-  background: var(--ambar); color: var(--noche); text-decoration: none; border-radius: 14px;
-  padding: 12px 14px; font-weight: 600; margin-bottom: 8px;
-}
+.ficha .cam { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--ambar); color: var(--noche); text-decoration: none; border-radius: 14px; padding: 12px 14px; font-weight: 600; margin-bottom: 8px; }
 .ficha .cam span:last-child { font-size: 20px; }
 .ficha .nota { color: var(--suave); font-size: 13px; margin: 0 0 8px; }
 .ficha .pie { color: var(--suave); font-size: 12px; margin-top: 14px; }
-.ficha .pie a { color: var(--azul-cantabrico); }
 .ficha .sin-cam { color: var(--suave); font-size: 14px; background: #162734; border-radius: 14px; padding: 12px 14px; }
 
 @media (min-width: 720px) {
   .ficha { left: auto; right: 24px; bottom: 24px; width: 420px; max-height: calc(100vh - 48px); }
-  .ficha .cerrar { display: block; }
 }

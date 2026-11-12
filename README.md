@@ -1,10 +1,11 @@
 # Pueblos de Asturias
 
-App web (instalable) con la previsión del tiempo y las webcams en directo de los 78 concejos de Asturias. Portada con mapa y ficha tipo postal por concejo.
+App web (instalable) con la previsión del tiempo y las webcams en directo de los 78 concejos de Asturias. Portada con un mapa de concejos coloreado por temperatura o cielo (se toca la superficie del concejo), lista con buscador y ficha tipo postal.
 
 ## Cómo funciona
 
-- `data/concejos.json`: los 78 concejos con su código INE (33001–33078, el mismo código que usa AEMET). Orden oficial, verificado contra la lista numerada de asturias.com.
+- `data/concejos.json`: los 78 concejos. El código de cada uno se toma del maestro de municipios de AEMET emparejando por nombre (los códigos INE no siguen el orden alfabético actual).
+- `data/mapa.json`: siluetas de los concejos en SVG, generadas con `scripts/mapa.mjs` a partir de es-atlas (límites del IGN, CC-BY 4.0).
 - `data/webcams.json`: webcams públicas por concejo, de momento las de la app de costa. Se abren en la web de origen; no se reproducen sus imágenes.
 - `data/nombres_ast.json`: nombres en asturiano. Es un borrador pendiente de revisión; los que faltan se muestran en castellano.
 - `scripts/actualizar.py`: descarga coordenadas y previsión de 5 días desde AEMET OpenData y escribe `estado.json`. Si una petición falla, conserva la última previsión válida.
@@ -28,4 +29,4 @@ Después, abre http://localhost:8000.
 - Localidades dentro de cada concejo, con su propia webcam, si se decide ampliar.
 - Service worker para uso sin conexión.
 
-Fuentes: AEMET OpenData (predicción municipal). Mapa: OpenStreetMap y CARTO.
+Fuentes: AEMET OpenData (predicción municipal). Límites de concejos: IGN, vía es-atlas (CC-BY 4.0).

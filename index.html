@@ -11,21 +11,36 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<link rel="stylesheet" href="app.css?v=3">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css?v=4">
 </head>
 <body>
-<div id="mapa" aria-label="Mapa de concejos de Asturias"></div>
-
 <header class="cabecera">
   <h1>Pueblos <em>d'Asturies</em></h1>
   <p id="estado-datos" class="sub">Cargando previsión…</p>
 </header>
 
+<section class="lienzo">
+  <div class="modos" role="tablist" aria-label="Colorear el mapa por">
+    <button role="tab" data-modo="temp" aria-selected="true">Temperatura</button>
+    <button role="tab" data-modo="cielo" aria-selected="false">Cielo</button>
+  </div>
+  <div id="mapa" class="mapa" aria-label="Mapa de concejos de Asturias">
+    <svg id="svg" role="img" preserveAspectRatio="xMidYMid meet"></svg>
+    <button id="reencuadrar" class="reencuadrar" hidden aria-label="Ver toda Asturias">⤢</button>
+  </div>
+  <div id="leyenda" class="leyenda"></div>
+</section>
+
+<section class="listado">
+  <input id="buscar" type="search" placeholder="Busca un concejo…" autocomplete="off" aria-label="Buscar concejo">
+  <ul id="lista"></ul>
+  <p class="creditos">Tiempo: AEMET OpenData · Límites: IGN (CC-BY 4.0) · Webcams: se abren en su web de origen.</p>
+</section>
+
+<div id="velo" class="velo" hidden></div>
 <section id="ficha" class="ficha" hidden aria-live="polite"></section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

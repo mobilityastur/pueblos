@@ -2,3 +2,4 @@ out/
 previo/
 __pycache__/
 *.pyc
+data/estado.json
