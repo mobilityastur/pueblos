@@ -101,8 +101,56 @@ function claveCielo({ tipo, noche }) {
 function fondoPostal({ tipo, noche }) {
   if (!tipo) return "verde";
   if (tipo === "despejado" || tipo === "claros") return noche ? "noche" : "sol";
-  if (tipo === "nubes" || tipo === "niebla") return "nube";
-  return "lluvia";
+  if (tipo === "nubes") return noche ? "nube-noche" : "nube";
+  return tipo; // lluvia, tormenta, nieve, niebla
+}
+
+// ---------- escenas animadas de la postal ----------
+// Pseudoaleatorio fijo para que gotas y copos no cambien de sitio al repintar.
+function azar(semilla) { let s = semilla; return () => (s = (s * 9301 + 49297) % 233280) / 233280; }
+function nube(x, y, s, color, op = 1, clase = "deriva", dur = 18) {
+  return `<g class="${clase}" style="animation-duration:${dur}s"><g transform="translate(${x} ${y}) scale(${s})" fill="${color}" opacity="${op}">
+    <ellipse cx="0" cy="18" rx="62" ry="20"/><circle cx="-26" cy="8" r="24"/><circle cx="6" cy="-2" r="32"/><circle cx="38" cy="10" r="22"/></g></g>`;
+}
+function sol(x, y) {
+  const rayos = Array.from({ length: 12 }, (_, i) => `<rect x="-3" y="-62" width="6" height="18" rx="3" transform="rotate(${i * 30})"/>`).join("");
+  return `<g transform="translate(${x} ${y})"><circle r="70" fill="#FFE08A" opacity=".18"/><g class="girar" fill="#FFD95A">${rayos}</g><circle r="34" fill="#FFD23F"/></g>`;
+}
+function luna(x, y) {
+  return `<defs><mask id="creciente"><circle r="28" fill="#fff"/><circle cx="13" cy="-9" r="25" fill="#000"/></mask></defs>
+    <g transform="translate(${x} ${y})"><circle r="56" fill="#E9E6FF" opacity=".07"/><circle r="28" fill="#F1EEDC" mask="url(#creciente)"/></g>`;
+}
+function estrellas(n, r) {
+  return Array.from({ length: n }, (_, i) => `<circle class="parpadeo" style="animation-delay:${(r() * 3).toFixed(2)}s" cx="${(r() * 400).toFixed(0)}" cy="${(r() * 120).toFixed(0)}" r="${(0.8 + r() * 1.4).toFixed(1)}" fill="#fff"/>`).join("");
+}
+function gotas(n, r, color = "#CFE6F5") {
+  return Array.from({ length: n }, () => {
+    const x = (r() * 420 - 10).toFixed(0), y = (r() * 200).toFixed(0);
+    return `<line class="gota" style="animation-delay:-${(r() * 1).toFixed(2)}s;animation-duration:${(0.6 + r() * 0.4).toFixed(2)}s" x1="${x}" y1="${y}" x2="${x - 4}" y2="${+y + 14}" stroke="${color}" stroke-width="2" stroke-linecap="round" opacity=".7"/>`;
+  }).join("");
+}
+function copos(n, r) {
+  return Array.from({ length: n }, () => `<circle class="copo" style="animation-delay:-${(r() * 6).toFixed(2)}s;animation-duration:${(4 + r() * 3).toFixed(2)}s" cx="${(r() * 400).toFixed(0)}" cy="${(r() * 60 - 40).toFixed(0)}" r="${(1.5 + r() * 2.5).toFixed(1)}" fill="#fff" opacity=".9"/>`).join("");
+}
+function escena({ tipo, noche }) {
+  const r = azar(7);
+  let dentro = "";
+  if (tipo === "despejado") dentro = noche ? estrellas(40, r) + luna(318, 128) : sol(318, 128);
+  else if (tipo === "claros") dentro = (noche ? estrellas(25, r) + luna(318, 124) : sol(318, 124))
+    + nube(372, 168, 0.6, noche ? "#7D86AA" : "#EEF3F7", 0.92, "deriva", 22) + nube(236, 44, 0.45, noche ? "#6E789E" : "#FFFFFF", 0.75, "deriva lenta", 28);
+  else if (tipo === "nubes") dentro = nube(110, 40, 1.1, "#7F909C", 0.9, "deriva", 26) + nube(250, 48, 1.3, "#8E9EAA", 0.9, "deriva lenta", 34)
+    + nube(300, 140, 1.2, "#A9B6BF", 0.95, "deriva", 20) + nube(410, 96, 0.9, "#97A5AF", 0.85, "deriva lenta", 30);
+  else if (tipo === "lluvia") dentro = gotas(70, r) + nube(150, 18, 1.2, "#647B8C", 0.95, "deriva", 26) + nube(300, 24, 1.4, "#56697A", 0.95, "deriva lenta", 32) + nube(420, 40, 1.1, "#6A8090", 0.9, "deriva", 24);
+  else if (tipo === "tormenta") dentro = gotas(80, r, "#B9C6E0")
+    + `<polygon class="rayo" points="292,52 266,118 288,118 270,186 322,100 298,100 316,52" fill="#FFE768"/>`
+    + `<polygon class="rayo tarde" points="372,62 356,110 372,110 360,152 396,96 378,96 390,62" fill="#FFF3A6"/>`
+    + nube(140, 16, 1.3, "#4E4A6B", 0.98, "deriva", 26) + nube(290, 22, 1.5, "#3B3756", 0.98, "deriva lenta", 32) + nube(420, 36, 1.2, "#56516F", 0.95, "deriva", 24)
+    + `<rect class="destello" width="400" height="200" fill="#fff"/>`;
+  else if (tipo === "nieve") dentro = nube(150, 20, 1.2, "#8FA4B6", 0.95, "deriva", 26) + nube(320, 26, 1.4, "#7C93A7", 0.95, "deriva lenta", 32) + copos(60, r);
+  else if (tipo === "niebla") dentro = `<defs><filter id="difuso" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="9"/></filter></defs><g filter="url(#difuso)">`
+    + [20, 64, 108, 152].map((y, i) => `<g class="${i % 2 ? "deriva lenta" : "deriva"}" style="animation-duration:${16 + i * 5}s"><ellipse cx="${i % 2 ? 260 : 150}" cy="${y}" rx="260" ry="20" fill="#EEF2F5" opacity="${0.35 + (i % 2) * 0.15}"/></g>`).join("") + "</g>";
+  if (!dentro) return "";
+  return `<svg class="escena" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${dentro}</svg>`;
 }
 
 // ---------- colores ----------
@@ -400,6 +448,7 @@ function abrirFicha(codigo) {
   ficha.innerHTML = `
     <button class="cerrar" aria-label="Cerrar">×</button>
     <div class="portada ${esc(tipo)}">
+      ${d ? escena(tipoCielo(ahora)) : ""}
       <h2>${esc(nombreMostrado(c))}</h2>
       ${c.nombreAst && c.nombreAst !== c.nombre ? `<p class="concejo-es">${esc(c.nombre)}</p>` : ""}
       <div class="hoy">
