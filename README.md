@@ -29,4 +29,6 @@ Después, abre http://localhost:8000.
 - Localidades dentro de cada concejo, con su propia webcam, si se decide ampliar.
 - Service worker para uso sin conexión.
 
+Al publicar cambios en la app, sube el número de `version.json`, de `VERSION_APP` en `app.js` y de los `?v=` de `index.html`: las apps ya abiertas se recargan solas.
+
 Fuentes: AEMET OpenData (predicción municipal). Límites de concejos: IGN, vía es-atlas (CC-BY 4.0).

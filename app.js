@@ -501,7 +501,25 @@ async function cargarDatos() {
   }
 }
 
+// Si se ha publicado una versión nueva, recargar saltándose la caché del navegador.
+const VERSION_APP = "7";
+async function comprobarVersion() {
+  try {
+    const r = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });
+    const { version } = await r.json();
+    if (version && version !== VERSION_APP) {
+      const clave = `pueblos-recarga-${version}`;
+      let ya = false;
+      try { ya = sessionStorage.getItem(clave); sessionStorage.setItem(clave, "1"); } catch { /* sin almacenamiento */ }
+      if (!ya) location.replace(`${location.pathname}?v=${version}`);
+    }
+  } catch { /* sin conexión: seguimos con lo que hay */ }
+}
+
 async function iniciar() {
+  comprobarVersion();
+  setInterval(comprobarVersion, REFRESCO_MS);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) comprobarVersion(); });
   try {
     mapa = await (await fetch(URL_MAPA)).json();
     dibujarMapa();
