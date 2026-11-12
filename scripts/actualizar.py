@@ -15,17 +15,22 @@ import re
 import sys
 import time
 import unicodedata
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 RAIZ = Path(__file__).resolve().parent.parent
 UA = "mobilityastur-pueblos/1.0 (+https://github.com/mobilityastur/pueblos)"
 URL_MUNICIPIOS = "https://opendata.aemet.es/opendata/api/maestro/municipios"
 URL_PREDICCION = "https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/diaria/{codigo}"
-PAUSA_S = 0.6  # AEMET limita las peticiones; vamos despacio
+PAUSA_S = 2.0  # AEMET limita las peticiones: vamos despacio
+REINTENTOS = 4
+ESPERA_429_S = 15
 DIAS = 5
 AHORA = datetime.now(timezone.utc)
+HOY_MADRID = AHORA.astimezone(ZoneInfo("Europe/Madrid")).date().isoformat()
 
 
 def get_json(url, cabeceras=None, timeout=30):
@@ -46,6 +51,18 @@ def aemet(url, clave):
     if meta.get("estado") != 200 or "datos" not in meta:
         raise RuntimeError(f"AEMET: {meta.get('estado')} {meta.get('descripcion')}")
     return get_json(meta["datos"])
+
+
+def con_reintentos(url, clave):
+    """Reintenta cuando AEMET responde 429 (demasiadas peticiones), esperando cada vez más."""
+    for intento in range(REINTENTOS):
+        time.sleep(PAUSA_S)
+        try:
+            return aemet(url, clave)
+        except urllib.error.HTTPError as e:
+            if e.code != 429 or intento == REINTENTOS - 1:
+                raise
+            time.sleep(ESPERA_429_S * (intento + 1))
 
 
 def normalizar(texto):
@@ -93,11 +110,12 @@ def resumir_dia(dia):
 
 
 def parsear_prediccion(datos):
-    """datos: lista con un elemento por municipio; cogemos el primero."""
+    """datos: lista con un elemento por municipio; cogemos el primero.
+    Descartamos los días anteriores a hoy (la API puede devolver el día en curso desde la noche anterior)."""
     if not datos:
         return None
     dias = (datos[0].get("prediccion") or {}).get("dia") or []
-    resumen = [resumir_dia(d) for d in dias][:DIAS]
+    resumen = [r for r in (resumir_dia(d) for d in dias) if r["fecha"] >= HOY_MADRID][:DIAS]
     return {"elaborado": datos[0].get("elaborado"), "dias": resumen} if resumen else None
 
 
@@ -148,12 +166,14 @@ def main():
         tiempo = None
         if clave:
             try:
-                time.sleep(PAUSA_S)
-                tiempo = parsear_prediccion(aemet(URL_PREDICCION.format(codigo=codigo), clave))
+                tiempo = parsear_prediccion(con_reintentos(URL_PREDICCION.format(codigo=codigo), clave))
             except Exception as e:  # noqa: BLE001
                 errores.append(f"{c['nombre']}: {e}")
         if tiempo is None:
             tiempo = (cache_previo.get(codigo) or {}).get("tiempo")  # conserva el último dato válido
+            if tiempo:
+                tiempo["dias"] = [d for d in tiempo["dias"] if d["fecha"] >= HOY_MADRID]
+                tiempo = tiempo if tiempo["dias"] else None
         resultado.append({
             "codigo": codigo,
             "nombre": c["nombre"],
