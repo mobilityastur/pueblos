@@ -109,8 +109,13 @@ def parsear_coordenada(valor):
 
 
 def resumir_dia(dia):
-    cielos = dia.get("estadoCielo") or []
-    cielo = next((c for c in cielos if not c.get("periodo")), cielos[0] if cielos else {})
+    cielos = [c for c in dia.get("estadoCielo") or [] if (c.get("value") or c.get("descripcion"))]
+    # Cielo general del día: el que no tiene periodo, o el de 00-24, o el primero con dato
+    cielo = (next((c for c in cielos if not c.get("periodo")), None)
+             or next((c for c in cielos if c.get("periodo") == "00-24"), None)
+             or (cielos[0] if cielos else {}))
+    # Y el de cada tramo horario (00-06, 06-12...), para mostrar el del momento
+    tramos = {(c.get("periodo") or ""): {"c": c.get("value") or "", "d": c.get("descripcion") or ""} for c in cielos}
     probs = [float(p.get("value") or 0) for p in dia.get("probPrecipitacion") or [] if str(p.get("value", "")).strip() != ""]
     temp = dia.get("temperatura") or {}
     return {
@@ -119,6 +124,7 @@ def resumir_dia(dia):
         "min": temp.get("minima"),
         "cielo": cielo.get("descripcion") or "",
         "codigoCielo": cielo.get("value") or "",
+        "cielos": tramos,
         "lluvia": max(probs) if probs else None,
     }
 

@@ -46,15 +46,63 @@ function diaSemana(fecha) {
   return DIAS_AST[new Date(`${fecha}T12:00:00`).getDay()];
 }
 
-function tipoCielo(texto = "", codigo = "") {
-  const t = texto.toLowerCase();
-  if (/tormenta/.test(t)) return "tormenta";
-  if (/nieve|aguanieve/.test(t)) return "nieve";
-  if (/niebla|bruma/.test(t)) return "niebla";
-  if (/lluvia|llovi|chubasco|granizo|llovizna/.test(t)) return "lluvia";
-  if (/cubierto|nuboso|nubes/.test(t) && !/poco|interv/.test(t)) return "nube";
-  if (/despejado|poco nuboso|sol|intervalos/.test(t)) return "sol";
-  return String(codigo).endsWith("n") ? "noche" : "sol";
+// Cielo del momento: el tramo horario de AEMET que contiene la hora actual (06-12, 12-18...),
+// o el más corto que la contenga; si no, el del día completo.
+function hoyISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function cieloActual(d) {
+  if (!d) return null;
+  const tramos = d.cielos || {};
+  const h = new Date().getHours();
+  const largo = (p) => { const [a, b] = p.split("-").map(Number); return b - a; };
+  if (d.fecha === hoyISO()) {
+    const dentro = Object.keys(tramos)
+      .filter((p) => { const [a, b] = p.split("-").map(Number); return p && h >= a && h < b; })
+      .sort((x, y) => largo(x) - largo(y));
+    for (const p of dentro) if (tramos[p].c || tramos[p].d) return tramos[p];
+  }
+  if (d.cielo || d.codigoCielo) return { c: d.codigoCielo, d: d.cielo };
+  const otro = Object.values(tramos).find((x) => x.c || x.d);
+  return otro || null;
+}
+
+// Clasificación por el código de AEMET (la "n" final indica noche).
+function tipoCielo(cielo) {
+  if (!cielo) return { tipo: null, noche: false };
+  const cod = String(cielo.c || "");
+  const noche = cod.endsWith("n");
+  const n = parseInt(cod, 10);
+  let tipo = null;
+  if (n === 11) tipo = "despejado";
+  else if (n === 12 || n === 13 || n === 17) tipo = "claros";
+  else if (n >= 14 && n <= 16) tipo = "nubes";
+  else if ((n >= 23 && n <= 26) || (n >= 43 && n <= 46)) tipo = "lluvia";
+  else if ((n >= 33 && n <= 36) || (n >= 71 && n <= 74)) tipo = "nieve";
+  else if ((n >= 51 && n <= 54) || (n >= 61 && n <= 64)) tipo = "tormenta";
+  else if (n >= 81 && n <= 83) tipo = "niebla";
+  if (!tipo) {
+    const t = String(cielo.d || "").toLowerCase();
+    if (/tormenta/.test(t)) tipo = "tormenta";
+    else if (/nieve|aguanieve/.test(t)) tipo = "nieve";
+    else if (/niebla|bruma|calima/.test(t)) tipo = "niebla";
+    else if (/lluvia|llovi|chubasco|granizo|llovizna/.test(t)) tipo = "lluvia";
+    else if (/poco nuboso|intervalos|nubes altas/.test(t)) tipo = "claros";
+    else if (/cubierto|nuboso/.test(t)) tipo = "nubes";
+    else if (/despejado/.test(t)) tipo = "despejado";
+  }
+  return { tipo, noche };
+}
+function claveCielo({ tipo, noche }) {
+  if (!tipo) return null;
+  return (tipo === "despejado" || tipo === "claros") && noche ? `${tipo}-noche` : tipo;
+}
+function fondoPostal({ tipo, noche }) {
+  if (!tipo) return "verde";
+  if (tipo === "despejado" || tipo === "claros") return noche ? "noche" : "sol";
+  if (tipo === "nubes" || tipo === "niebla") return "nube";
+  return "lluvia";
 }
 
 // ---------- colores ----------
@@ -68,8 +116,16 @@ function calcularRango() {
   if (hi - lo < 6) { const m = (hi + lo) / 2; lo = Math.floor(m - 3); hi = Math.ceil(m + 3); }
   rango = { lo, hi };
 }
-const COLOR_CIELO = { sol: "#F2B33D", nube: "#7E929F", niebla: "#A9B6BF", lluvia: "#3C7FB0", tormenta: "#7A5BB0", nieve: "#E8F1F6", noche: "#3B4C7A" };
-const NOMBRE_CIELO = { sol: "Sol", nube: "Nubes", niebla: "Niebla", lluvia: "Lluvia", tormenta: "Tormenta", nieve: "Nieve" };
+const COLOR_CIELO = {
+  despejado: "#F2B33D", "despejado-noche": "#8E86E0",
+  claros: "#B9C27A", "claros-noche": "#5F6E9E",
+  nubes: "#7E929F", niebla: "#B4C0C8", lluvia: "#3C7FB0", tormenta: "#B0478A", nieve: "#F4F8FB",
+};
+const NOMBRE_CIELO = {
+  despejado: "Despejado", "despejado-noche": "Despejado (noche)",
+  claros: "Poco nuboso", "claros-noche": "Poco nuboso (noche)",
+  nubes: "Nubes", niebla: "Niebla", lluvia: "Lluvia", tormenta: "Tormenta", nieve: "Nieve",
+};
 const SIN_DATO = "#33475A";
 
 function mezclar(a, b, t) {
@@ -91,7 +147,7 @@ function colorTemp(temp) {
 function colorDe(c) {
   const d = hoy(c);
   if (!d) return SIN_DATO;
-  return modo === "temp" ? colorTemp(d.max) : COLOR_CIELO[tipoCielo(d.cielo, d.codigoCielo)] || SIN_DATO;
+  return modo === "temp" ? colorTemp(d.max) : COLOR_CIELO[claveCielo(tipoCielo(cieloActual(d)))] || SIN_DATO;
 }
 
 // ---------- mapa ----------
@@ -139,7 +195,10 @@ function pintarLeyenda() {
     const grad = ESCALA_TEMP.map(([t, c]) => `${c} ${t * 100}%`).join(", ");
     el.innerHTML = `<span>${rango.lo}°</span><span class="barra" style="background:linear-gradient(90deg, ${grad})"></span><span>${rango.hi}°</span><span>· máxima de hoy</span>`;
   } else {
-    el.innerHTML = Object.entries(NOMBRE_CIELO).map(([k, n]) => `<span class="chip"><i style="background:${COLOR_CIELO[k]}"></i>${n}</span>`).join("");
+    // Solo los tipos de cielo que aparecen ahora en el mapa
+    const presentes = new Set((estado ? estado.concejos : []).map((c) => claveCielo(tipoCielo(cieloActual(hoy(c))))).filter(Boolean));
+    el.innerHTML = Object.entries(NOMBRE_CIELO).filter(([k]) => presentes.has(k))
+      .map(([k, n]) => `<span class="chip"><i style="background:${COLOR_CIELO[k]}"></i>${n}</span>`).join("") || "<span>Sin datos de cielo</span>";
   }
 }
 
@@ -283,7 +342,7 @@ function pintarLista() {
     return `<li><button data-codigo="${esc(c.codigo)}">
       <span class="punto" style="background:${colorDe(c)}"></span>
       <span class="nom"><b>${esc(nombreMostrado(c))}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</span>
-      <span class="dato">${d && d.max != null ? Math.round(d.max) + "°" : "–"}<small>${d ? esc(d.cielo || "") : "sin previsión"}</small></span>
+      <span class="dato">${d && d.max != null ? Math.round(d.max) + "°" : "–"}<small>${d ? esc((cieloActual(d) || {}).d || "") : "sin previsión"}</small></span>
     </button></li>`;
   }).join("") || `<li class="sin-cam">Ningún concejo coincide.</li>`;
 }
@@ -315,7 +374,8 @@ function abrirFicha(codigo) {
   activa = codigo;
   pintar();
   const d = hoy(c);
-  const tipo = d ? tipoCielo(d.cielo, d.codigoCielo) : "verde";
+  const ahora = cieloActual(d);
+  const tipo = d ? fondoPostal(tipoCielo(ahora)) : "verde";
   const dias = (c.tiempo && c.tiempo.dias) || [];
   const webcams = c.webcams || [];
   const fuentes = [...new Set(webcams.map((w) => w.fuente))].join(" y ");
@@ -344,7 +404,7 @@ function abrirFicha(codigo) {
       ${c.nombreAst && c.nombreAst !== c.nombre ? `<p class="concejo-es">${esc(c.nombre)}</p>` : ""}
       <div class="hoy">
         <span class="grados">${d && d.max != null ? Math.round(d.max) + "°" : "–"}</span>
-        <span class="cielo">${d ? esc(d.cielo || "") : "Sin previsión por ahora"}</span>
+        <span class="cielo">${d ? esc((ahora && ahora.d) || "") : "Sin previsión por ahora"}</span>
       </div>
     </div>
     <div class="cuerpo">
