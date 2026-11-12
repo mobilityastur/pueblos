@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2F8FD8"/>
+      <stop offset="1" stop-color="#8FD0F2"/>
+    </linearGradient>
+    <linearGradient id="prado" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5DB04F"/>
+      <stop offset="1" stop-color="#2F7A36"/>
+    </linearGradient>
+    <linearGradient id="tejado" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#D0643A"/>
+      <stop offset="1" stop-color="#A2452A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- cielo y sol -->
+  <rect width="512" height="512" fill="url(#cielo)"/>
+  <g fill="#FFD23F">
+    <circle cx="386" cy="118" r="50"/>
+    <g stroke="#FFD23F" stroke-width="12" stroke-linecap="round">
+      <line x1="386" y1="38" x2="386" y2="52"/>
+      <line x1="386" y1="184" x2="386" y2="198"/>
+      <line x1="306" y1="118" x2="320" y2="118"/>
+      <line x1="452" y1="118" x2="466" y2="118"/>
+      <line x1="329" y1="61" x2="339" y2="71"/>
+      <line x1="433" y1="165" x2="443" y2="175"/>
+      <line x1="329" y1="175" x2="339" y2="165"/>
+      <line x1="433" y1="71" x2="443" y2="61"/>
+    </g>
+  </g>
+
+  <!-- montes y prado -->
+  <path d="M0 330 C 90 270, 170 300, 250 318 C 340 290, 430 262, 512 300 L512 512 L0 512 Z" fill="#3E8F45"/>
+  <path d="M0 392 C 120 360, 250 372, 512 380 L512 512 L0 512 Z" fill="url(#prado)"/>
+
+  <!-- sombra -->
+  <ellipse cx="256" cy="432" rx="150" ry="16" fill="#1F5A28" opacity=".45"/>
+
+  <!-- pegollos (pilares de piedra) -->
+  <g fill="#B9B4A8" stroke="#6F6A60" stroke-width="3">
+    <path d="M170 336 L196 336 L206 430 L160 430 Z"/>
+    <path d="M316 336 L342 336 L352 430 L306 430 Z"/>
+  </g>
+  <!-- muelas (losas sobre los pegollos) -->
+  <g fill="#D6D1C6" stroke="#6F6A60" stroke-width="3">
+    <rect x="150" y="320" width="66" height="16" rx="3"/>
+    <rect x="296" y="320" width="66" height="16" rx="3"/>
+  </g>
+
+  <!-- caja de madera -->
+  <rect x="140" y="218" width="232" height="104" fill="#8A5A34" stroke="#4E311B" stroke-width="4"/>
+  <g stroke="#6B4426" stroke-width="3">
+    <line x1="169" y1="220" x2="169" y2="320"/>
+    <line x1="198" y1="220" x2="198" y2="320"/>
+    <line x1="227" y1="220" x2="227" y2="320"/>
+    <line x1="285" y1="220" x2="285" y2="320"/>
+    <line x1="314" y1="220" x2="314" y2="320"/>
+    <line x1="343" y1="220" x2="343" y2="320"/>
+  </g>
+  <!-- puerta -->
+  <rect x="234" y="238" width="44" height="84" fill="#5A3820" stroke="#3B2413" stroke-width="3"/>
+  <circle cx="270" cy="282" r="3" fill="#D9B36A"/>
+  <!-- viga de base -->
+  <rect x="132" y="314" width="248" height="12" fill="#6B4426" stroke="#3B2413" stroke-width="3"/>
+
+  <!-- tejado a cuatro aguas -->
+  <path d="M106 224 L256 126 L406 224 Z" fill="url(#tejado)" stroke="#6E2E1B" stroke-width="4" stroke-linejoin="round"/>
+  <g stroke="#8E3B22" stroke-width="3" opacity=".7">
+    <line x1="150" y1="210" x2="362" y2="210"/>
+    <line x1="182" y1="190" x2="330" y2="190"/>
+    <line x1="213" y1="170" x2="299" y2="170"/>
+  </g>
+  <!-- remate -->
+  <circle cx="256" cy="120" r="9" fill="#D6D1C6" stroke="#6F6A60" stroke-width="3"/>
+</svg>
