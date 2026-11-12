@@ -26,8 +26,10 @@ UA = "mobilityastur-pueblos/1.0 (+https://github.com/mobilityastur/pueblos)"
 URL_MUNICIPIOS = "https://opendata.aemet.es/opendata/api/maestro/municipios"
 URL_PREDICCION = "https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/diaria/{codigo}"
 PAUSA_S = 2.0  # AEMET limita las peticiones: vamos despacio
-REINTENTOS = 4
-ESPERA_429_S = 15
+REINTENTOS = 3
+ESPERA_429_S = 10
+PRESUPUESTO_S = 17 * 60  # tiempo máximo de descargas; después publicamos lo que haya
+INICIO = time.monotonic()
 DIAS = 5
 AHORA = datetime.now(timezone.utc)
 HOY_MADRID = AHORA.astimezone(ZoneInfo("Europe/Madrid")).date().isoformat()
@@ -56,6 +58,8 @@ def aemet(url, clave):
 def con_reintentos(url, clave):
     """Reintenta cuando AEMET responde 429 (demasiadas peticiones), esperando cada vez más."""
     for intento in range(REINTENTOS):
+        if time.monotonic() - INICIO > PRESUPUESTO_S:
+            raise TimeoutError("presupuesto de tiempo agotado")
         time.sleep(PAUSA_S)
         try:
             return aemet(url, clave)
@@ -164,7 +168,7 @@ def main():
         lat = parsear_coordenada(ficha.get("latitud")) or c.get("lat")
         lon = parsear_coordenada(ficha.get("longitud")) or c.get("lon")
         tiempo = None
-        if clave:
+        if clave and time.monotonic() - INICIO <= PRESUPUESTO_S:
             try:
                 tiempo = parsear_prediccion(con_reintentos(URL_PREDICCION.format(codigo=codigo), clave))
             except Exception as e:  # noqa: BLE001
