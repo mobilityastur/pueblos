@@ -31,7 +31,7 @@ function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 function normalizar(s) {
-  return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[’‘`´]/g, "'").toLowerCase();
 }
 function leerModo() {
   try { return localStorage.getItem("pueblos-modo") || "temp"; } catch { return "temp"; }
@@ -548,7 +548,7 @@ async function cargarDatos() {
 }
 
 // Si se ha publicado una versión nueva, recargar saltándose la caché del navegador.
-const VERSION_APP = "8";
+const VERSION_APP = "9";
 async function comprobarVersion() {
   try {
     const r = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });
