@@ -429,10 +429,17 @@ lista.addEventListener("click", (e) => {
   const b = e.target.closest("[data-codigo]");
   if (b) abrirFicha(b.dataset.codigo);
 });
+const borrar = document.getElementById("borrar");
 buscar.addEventListener("input", () => {
   filtro = normalizar(buscar.value.trim());
+  borrar.hidden = !buscar.value;
   pintarLista();
   pintar();
+});
+borrar.addEventListener("click", () => {
+  buscar.value = "";
+  buscar.dispatchEvent(new Event("input"));
+  buscar.blur();
 });
 
 document.querySelectorAll(".modos button").forEach((b) => {
@@ -548,7 +555,7 @@ async function cargarDatos() {
 }
 
 // Si se ha publicado una versión nueva, recargar saltándose la caché del navegador.
-const VERSION_APP = "9";
+const VERSION_APP = "10";
 async function comprobarVersion() {
   try {
     const r = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });

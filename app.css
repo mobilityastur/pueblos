@@ -47,7 +47,11 @@ button { font: inherit; color: inherit; }
 
 /* Lista */
 .listado { padding: 14px 12px 24px; }
-#buscar { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--borde); background: var(--hundido); color: var(--texto); font: inherit; }
+.caja-buscar { position: relative; }
+.borrar { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border: 0; border-radius: 50%;
+  background: var(--borde); color: var(--texto); font-size: 20px; line-height: 1; cursor: pointer; }
+#buscar::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+#buscar { width: 100%; padding: 12px 48px 12px 14px; border-radius: 14px; border: 1px solid var(--borde); background: var(--hundido); color: var(--texto); font: inherit; }
 #buscar::placeholder { color: var(--suave); }
 #lista { list-style: none; margin: 10px 0 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 6px; }
 #lista button { width: 100%; display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 12px; text-align: left;
