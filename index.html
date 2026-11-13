@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="app.css?v=7">
+<link rel="stylesheet" href="app.css?v=8">
 </head>
 <body>
 <header class="cabecera">
@@ -25,6 +25,7 @@
 <section class="lienzo">
   <div class="modos" role="tablist" aria-label="Colorear el mapa por">
     <button role="tab" data-modo="temp" aria-selected="true">Temperatura</button>
+    <button role="tab" data-modo="max" aria-selected="false">Máx. hoy</button>
     <button role="tab" data-modo="cielo" aria-selected="false">Cielo</button>
   </div>
   <div id="mapa" class="mapa" aria-label="Mapa de concejos de Asturias">
@@ -43,6 +44,6 @@
 <div id="velo" class="velo" hidden></div>
 <section id="ficha" class="ficha" hidden aria-live="polite"></section>
 
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

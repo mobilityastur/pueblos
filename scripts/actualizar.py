@@ -25,6 +25,9 @@ RAIZ = Path(__file__).resolve().parent.parent
 UA = "mobilityastur-pueblos/1.0 (+https://github.com/mobilityastur/pueblos)"
 URL_MUNICIPIOS = "https://opendata.aemet.es/opendata/api/maestro/municipios"
 URL_PREDICCION = "https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/diaria/{codigo}"
+URL_HORARIA = "https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/horaria/{codigo}"
+HORAS = 36            # horas de predicción horaria que guardamos desde la hora actual
+DIARIA_CADA_S = 3 * 3600  # la diaria (5 días) cambia poco: se pide cada 3 horas
 PAUSA_S = 2.0  # AEMET limita las peticiones: vamos despacio
 REINTENTOS = 3
 ESPERA_429_S = 10
@@ -33,6 +36,7 @@ INICIO = time.monotonic()
 DIAS = 5
 AHORA = datetime.now(timezone.utc)
 HOY_MADRID = AHORA.astimezone(ZoneInfo("Europe/Madrid")).date().isoformat()
+HORA_MADRID = AHORA.astimezone(ZoneInfo("Europe/Madrid")).strftime("%Y-%m-%dT%H")
 
 
 def get_json(url, cabeceras=None, timeout=30):
@@ -139,6 +143,46 @@ def parsear_prediccion(datos):
     return {"elaborado": datos[0].get("elaborado"), "dias": resumen} if resumen else None
 
 
+def numero(v):
+    """AEMET da números como texto; 'Ip' (inapreciable) cuenta como 0."""
+    if v is None or str(v).strip() == "":
+        return None
+    if str(v).strip().lower() == "ip":
+        return 0.0
+    try:
+        return float(str(v).replace(",", "."))
+    except ValueError:
+        return None
+
+
+def parsear_horaria(datos, desde):
+    """Lista de horas [{h:'AAAA-MM-DDTHH', t, c, d, p, mm}] a partir de la hora 'desde'."""
+    if not datos:
+        return []
+    horas = []
+    for dia in (datos[0].get("prediccion") or {}).get("dia") or []:
+        fecha = (dia.get("fecha") or "")[:10]
+        cielo = {x["periodo"]: x for x in dia.get("estadoCielo") or [] if x.get("periodo")}
+        lluvia_mm = {x["periodo"]: x.get("value") for x in dia.get("precipitacion") or [] if x.get("periodo")}
+        probs = [x for x in dia.get("probPrecipitacion") or [] if len(str(x.get("periodo", ""))) == 4]
+        for x in dia.get("temperatura") or []:
+            hh = str(x.get("periodo") or "").zfill(2)
+            if not hh.isdigit():
+                continue
+            h = int(hh)
+            prob = None
+            for pr in probs:
+                a, b = int(pr["periodo"][:2]), int(pr["periodo"][2:])
+                dentro = a <= h < b if a < b else (h >= a or h < b)
+                if dentro:
+                    prob = numero(pr.get("value"))
+            cl = cielo.get(hh) or cielo.get(str(h)) or {}
+            horas.append({"h": f"{fecha}T{hh}", "t": numero(x.get("value")), "c": cl.get("value") or "",
+                          "d": cl.get("descripcion") or "", "p": prob, "mm": numero(lluvia_mm.get(hh))})
+    horas.sort(key=lambda x: x["h"])
+    return [x for x in horas if x["h"] >= desde][:HORAS]
+
+
 def cargar_datos_locales():
     concejos = json.loads((RAIZ / "data" / "concejos.json").read_text(encoding="utf-8"))
     webcams = json.loads((RAIZ / "data" / "webcams.json").read_text(encoding="utf-8"))
@@ -195,6 +239,7 @@ def main():
 
     # 2. Predicción por concejo
     resultado = []
+    diarias = {}
     for c in concejos_base:
         codigo = codigos.get(c["nombre"])
         if not codigo:
@@ -202,17 +247,39 @@ def main():
         ficha = maestro.get(codigo, {})
         lat = parsear_coordenada(ficha.get("latitud")) or c.get("lat")
         lon = parsear_coordenada(ficha.get("longitud")) or c.get("lon")
-        tiempo = None
-        if clave and time.monotonic() - INICIO <= PRESUPUESTO_S:
+        previo = cache_previo.get(codigo) or {}
+        hay_tiempo = lambda: clave and time.monotonic() - INICIO <= PRESUPUESTO_S
+
+        # Predicción diaria (5 días): solo si la guardada tiene más de 3 horas
+        tiempo, diaria_ts = None, previo.get("diaria_ts")
+        edad = (AHORA - datetime.fromisoformat(diaria_ts)).total_seconds() if diaria_ts else None
+        if hay_tiempo() and (edad is None or edad > DIARIA_CADA_S or not previo.get("tiempo")):
             try:
                 tiempo = parsear_prediccion(con_reintentos(URL_PREDICCION.format(codigo=codigo), clave))
+                if tiempo:
+                    diaria_ts = AHORA.isoformat()
             except Exception as e:  # noqa: BLE001
-                errores.append(f"{c['nombre']}: {e}")
+                errores.append(f"{c['nombre']} (diaria): {e}")
         if tiempo is None:
-            tiempo = (cache_previo.get(codigo) or {}).get("tiempo")  # conserva el último dato válido
+            tiempo = previo.get("tiempo")  # conserva el último dato válido
             if tiempo:
                 tiempo["dias"] = [d for d in tiempo["dias"] if d["fecha"] >= HOY_MADRID]
                 tiempo = tiempo if tiempo["dias"] else None
+
+        # Predicción horaria: en cada ejecución
+        horas = None
+        if hay_tiempo():
+            try:
+                horas = parsear_horaria(con_reintentos(URL_HORARIA.format(codigo=codigo), clave), HORA_MADRID) or None
+            except Exception as e:  # noqa: BLE001
+                errores.append(f"{c['nombre']} (horaria): {e}")
+        if horas is None:
+            horas = [x for x in previo.get("horas") or [] if x["h"] >= HORA_MADRID] or None
+        if horas:
+            tiempo = dict(tiempo or {"dias": []})
+            tiempo["horas"] = horas
+        if tiempo and tiempo.get("dias"):
+            diarias[codigo] = diaria_ts
         resultado.append({
             "codigo": codigo,
             "nombre": c["nombre"],
@@ -233,10 +300,17 @@ def main():
         "concejos": resultado,
     }
     (salida / "estado.json").write_text(json.dumps(estado, ensure_ascii=False, indent=1), encoding="utf-8")
-    cache = {r["codigo"]: {"tiempo": r["tiempo"]} for r in resultado if r["tiempo"]}
+    cache = {}
+    for r in resultado:
+        if not r["tiempo"]:
+            continue
+        sin_horas = {k: v for k, v in r["tiempo"].items() if k != "horas"}
+        cache[r["codigo"]] = {"tiempo": sin_horas if sin_horas.get("dias") else None,
+                              "diaria_ts": diarias.get(r["codigo"]), "horas": r["tiempo"].get("horas")}
     cache["_codigos"] = codigos
     (salida / "cache.json").write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
-    print(f"{len(resultado)} concejos, {sum(1 for r in resultado if r['tiempo'])} con previsión, {len(errores)} avisos")
+    print(f"{len(resultado)} concejos, {sum(1 for r in resultado if r['tiempo'] and r['tiempo'].get('dias'))} con diaria, "
+          f"{sum(1 for r in resultado if r['tiempo'] and r['tiempo'].get('horas'))} con horaria, {len(errores)} avisos")
     return 0
 
 

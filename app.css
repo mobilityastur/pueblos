@@ -129,3 +129,17 @@ button { font: inherit; color: inherit; }
 @media (min-width: 720px) {
   .ficha { left: auto; right: 24px; bottom: 24px; width: 420px; max-height: calc(100vh - 48px); }
 }
+
+.ficha .hoy .cielo small { display: block; font-size: 14px; font-weight: 500; opacity: .9; margin-top: 2px; }
+.ficha .hoy { align-items: flex-end; }
+.ficha .franja { display: flex; gap: 6px; overflow-x: auto; margin: 0 -16px 14px; padding: 0 16px 4px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+.ficha .franja::-webkit-scrollbar { display: none; }
+.ficha .hora { flex: 0 0 58px; background: #223645; border-radius: 14px; padding: 8px 4px; text-align: center; font-size: 13px; scroll-snap-align: start; }
+.ficha .hora:first-child { background: #2C4A5E; }
+.ficha .hora.medianoche { box-shadow: inset 2px 0 0 var(--azul-cantabrico); }
+.ficha .hora b { display: block; color: var(--suave); font-weight: 600; }
+.ficha .hora:first-child b { color: var(--texto); }
+.ficha .hora .ico { display: block; font-size: 20px; margin: 4px 0 2px; }
+.ficha .hora .t { display: block; font-weight: 700; font-size: 16px; }
+.ficha .hora .p { display: block; color: var(--azul-cantabrico); font-size: 11px; min-height: 14px; }
+.ficha .cuerpo > h3:first-child { margin-top: 2px; }

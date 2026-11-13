@@ -68,6 +68,35 @@ function cieloActual(d) {
   return otro || null;
 }
 
+// ---------- predicción horaria ----------
+function claveHora(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}T${String(d.getHours()).padStart(2, "0")}`;
+}
+function horas(c) { return (c && c.tiempo && c.tiempo.horas) || []; }
+// La hora en curso, o la última anterior si falta la exacta (como mucho 3 horas atrás).
+function horaActual(c) {
+  const ahora = claveHora();
+  const hs = horas(c).filter((x) => x.h <= ahora);
+  const ult = hs[hs.length - 1];
+  if (!ult) return null;
+  const dif = (new Date(`${ahora}:00`) - new Date(`${ult.h}:00`)) / 3600000;
+  return dif <= 3 ? ult : null;
+}
+// Temperatura que se muestra según el modo: la de ahora (o la máxima si aún no hay horaria).
+function tempMostrada(c) {
+  const d = hoy(c);
+  if (modo === "max") return d && d.max != null ? d.max : null;
+  const h = horaActual(c);
+  if (h && h.t != null) return h.t;
+  return d && d.max != null ? d.max : null;
+}
+function cieloDe(c) {
+  const h = horaActual(c);
+  if (h && (h.c || h.d)) return { c: h.c, d: h.d };
+  return cieloActual(hoy(c));
+}
+const ICONO = { despejado: "☀️", "despejado-noche": "🌙", claros: "🌤️", "claros-noche": "☁️", nubes: "☁️", lluvia: "🌧️", tormenta: "⛈️", nieve: "🌨️", niebla: "🌫️" };
+
 // Clasificación por el código de AEMET (la "n" final indica noche).
 function tipoCielo(cielo) {
   if (!cielo) return { tipo: null, noche: false };
@@ -158,7 +187,7 @@ function escena({ tipo, noche }) {
 const ESCALA_TEMP = [[0, "#5B8FD6"], [0.25, "#4FB3C2"], [0.45, "#69B98A"], [0.65, "#C7C15A"], [0.82, "#F2A33D"], [1, "#E2583E"]];
 let rango = { lo: 0, hi: 28 };
 function calcularRango() {
-  const ts = (estado ? estado.concejos : []).map((c) => hoy(c)).filter((d) => d && d.max != null).map((d) => d.max);
+  const ts = (estado ? estado.concejos : []).map(tempMostrada).filter((x) => x != null);
   if (!ts.length) return;
   let lo = Math.floor(Math.min(...ts)), hi = Math.ceil(Math.max(...ts));
   if (hi - lo < 6) { const m = (hi + lo) / 2; lo = Math.floor(m - 3); hi = Math.ceil(m + 3); }
@@ -193,9 +222,9 @@ function colorTemp(temp) {
   return ESCALA_TEMP[ESCALA_TEMP.length - 1][1];
 }
 function colorDe(c) {
-  const d = hoy(c);
-  if (!d) return SIN_DATO;
-  return modo === "temp" ? colorTemp(d.max) : COLOR_CIELO[claveCielo(tipoCielo(cieloActual(d)))] || SIN_DATO;
+  if (!c || !c.tiempo) return SIN_DATO;
+  if (modo === "cielo") return COLOR_CIELO[claveCielo(tipoCielo(cieloDe(c)))] || SIN_DATO;
+  return colorTemp(tempMostrada(c));
 }
 
 // ---------- mapa ----------
@@ -226,6 +255,7 @@ function dibujarMapa() {
 
 function pintar() {
   if (!mapa) return;
+  calcularRango();
   for (const m of mapa.concejos) {
     const p = caminos.get(m.codigo);
     const c = porCodigo.get(m.codigo);
@@ -239,12 +269,13 @@ function pintar() {
 
 function pintarLeyenda() {
   const el = document.getElementById("leyenda");
-  if (modo === "temp") {
+  if (modo !== "cielo") {
     const grad = ESCALA_TEMP.map(([t, c]) => `${c} ${t * 100}%`).join(", ");
-    el.innerHTML = `<span>${rango.lo}°</span><span class="barra" style="background:linear-gradient(90deg, ${grad})"></span><span>${rango.hi}°</span><span>· máxima de hoy</span>`;
+    const que = modo === "max" ? "máxima de hoy" : `prevista a las ${String(new Date().getHours()).padStart(2, "0")}:00`;
+    el.innerHTML = `<span>${rango.lo}°</span><span class="barra" style="background:linear-gradient(90deg, ${grad})"></span><span>${rango.hi}°</span><span>· ${que}</span>`;
   } else {
     // Solo los tipos de cielo que aparecen ahora en el mapa
-    const presentes = new Set((estado ? estado.concejos : []).map((c) => claveCielo(tipoCielo(cieloActual(hoy(c))))).filter(Boolean));
+    const presentes = new Set((estado ? estado.concejos : []).map((c) => claveCielo(tipoCielo(cieloDe(c)))).filter(Boolean));
     el.innerHTML = Object.entries(NOMBRE_CIELO).filter(([k]) => presentes.has(k))
       .map(([k, n]) => `<span class="chip"><i style="background:${COLOR_CIELO[k]}"></i>${n}</span>`).join("") || "<span>Sin datos de cielo</span>";
   }
@@ -266,8 +297,8 @@ function pintarRotulos() {
   for (const m of orden) {
     if (m.cx < vb.x || m.cx > vb.x + vb.w || m.cy < vb.y || m.cy > vb.y + vb.h) continue;
     const c = porCodigo.get(m.codigo);
-    const d = hoy(c);
-    const temp = d && d.max != null ? `${Math.round(d.max)}°` : "–";
+    const tm = tempMostrada(c);
+    const temp = tm != null ? `${Math.round(tm)}°` : "–";
     const nombre = nombreMostrado(c) || m.nombre;
     const fT = 13 * u, fN = 11 * u;
     let lineas = conNombre ? [[nombre, fN, "nombre"], [temp, fT, ""]] : [[temp, fT, ""]];
@@ -384,13 +415,13 @@ function pintarLista() {
     .filter(coincide)
     .sort((a, b) => nombreMostrado(a).localeCompare(nombreMostrado(b), "es"));
   lista.innerHTML = filas.map((c) => {
-    const d = hoy(c);
+    const tm = tempMostrada(c);
     const cams = (c.webcams || []).length;
     const sub = [c.nombreAst && c.nombreAst !== c.nombre ? c.nombre : "", cams ? `${cams} webcam${cams > 1 ? "s" : ""}` : ""].filter(Boolean).join(" · ");
     return `<li><button data-codigo="${esc(c.codigo)}">
       <span class="punto" style="background:${colorDe(c)}"></span>
       <span class="nom"><b>${esc(nombreMostrado(c))}</b>${sub ? `<small>${esc(sub)}</small>` : ""}</span>
-      <span class="dato">${d && d.max != null ? Math.round(d.max) + "°" : "–"}<small>${d ? esc((cieloActual(d) || {}).d || "") : "sin previsión"}</small></span>
+      <span class="dato">${tm != null ? Math.round(tm) + "°" : "–"}<small>${c.tiempo ? esc((cieloDe(c) || {}).d || "") : "sin previsión"}</small></span>
     </button></li>`;
   }).join("") || `<li class="sin-cam">Ningún concejo coincide.</li>`;
 }
@@ -422,8 +453,21 @@ function abrirFicha(codigo) {
   activa = codigo;
   pintar();
   const d = hoy(c);
-  const ahora = cieloActual(d);
-  const tipo = d ? fondoPostal(tipoCielo(ahora)) : "verde";
+  const ahora = cieloDe(c);
+  const hAhora = horaActual(c);
+  const tAhora = hAhora && hAhora.t != null ? hAhora.t : d && d.max != null ? d.max : null;
+  const tipo = c.tiempo ? fondoPostal(tipoCielo(ahora)) : "verde";
+  const clave = claveHora();
+  const proximas = horas(c).filter((x) => x.h >= (hAhora ? hAhora.h : clave)).slice(0, 24);
+  const franja = proximas.length
+    ? `<h3>Próximas horas</h3><div class="franja">${proximas.map((x, i) => `
+        <div class="hora${x.h.endsWith("T00") && i ? " medianoche" : ""}">
+          <b>${i === 0 ? "Ahora" : x.h.slice(11) + " h"}</b>
+          <span class="ico">${ICONO[claveCielo(tipoCielo(x))] || "·"}</span>
+          <span class="t">${x.t != null ? Math.round(x.t) + "°" : "–"}</span>
+          <span class="p">${x.p != null ? `💧${Math.round(x.p)}%` : ""}</span>
+        </div>`).join("")}</div>`
+    : "";
   const dias = (c.tiempo && c.tiempo.dias) || [];
   const webcams = c.webcams || [];
   const fuentes = [...new Set(webcams.map((w) => w.fuente))].join(" y ");
@@ -448,15 +492,17 @@ function abrirFicha(codigo) {
   ficha.innerHTML = `
     <button class="cerrar" aria-label="Cerrar">×</button>
     <div class="portada ${esc(tipo)}">
-      ${d ? escena(tipoCielo(ahora)) : ""}
+      ${c.tiempo ? escena(tipoCielo(ahora)) : ""}
       <h2>${esc(nombreMostrado(c))}</h2>
       ${c.nombreAst && c.nombreAst !== c.nombre ? `<p class="concejo-es">${esc(c.nombre)}</p>` : ""}
       <div class="hoy">
-        <span class="grados">${d && d.max != null ? Math.round(d.max) + "°" : "–"}</span>
-        <span class="cielo">${d ? esc((ahora && ahora.d) || "") : "Sin previsión por ahora"}</span>
+        <span class="grados">${tAhora != null ? Math.round(tAhora) + "°" : "–"}</span>
+        <span class="cielo">${c.tiempo ? esc((ahora && ahora.d) || "") : "Sin previsión por ahora"}${d && d.max != null ? `<small>Máx ${Math.round(d.max)}° · Mín ${d.min != null ? Math.round(d.min) + "°" : "–"}</small>` : ""}</span>
       </div>
     </div>
     <div class="cuerpo">
+      ${franja}
+      <h3>Próximos días</h3>
       ${semana}
       ${camaras}
       <p class="pie">${elab} Fuente del tiempo: AEMET OpenData.</p>
@@ -502,7 +548,7 @@ async function cargarDatos() {
 }
 
 // Si se ha publicado una versión nueva, recargar saltándose la caché del navegador.
-const VERSION_APP = "7";
+const VERSION_APP = "8";
 async function comprobarVersion() {
   try {
     const r = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });
@@ -515,6 +561,16 @@ async function comprobarVersion() {
     }
   } catch { /* sin conexión: seguimos con lo que hay */ }
 }
+
+// Al cambiar de hora, repintar con la temperatura y el cielo de la hora nueva.
+let horaPintada = claveHora();
+setInterval(() => {
+  if (claveHora() === horaPintada || !estado) return;
+  horaPintada = claveHora();
+  pintarLista();
+  pintar();
+  if (activa) abrirFicha(activa);
+}, 60000);
 
 async function iniciar() {
   comprobarVersion();
