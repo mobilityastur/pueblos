@@ -186,7 +186,11 @@ def parsear_horaria(datos, desde):
 def cargar_datos_locales():
     concejos = json.loads((RAIZ / "data" / "concejos.json").read_text(encoding="utf-8"))
     webcams = json.loads((RAIZ / "data" / "webcams.json").read_text(encoding="utf-8"))
-    nombres_ast = json.loads((RAIZ / "data" / "nombres_ast.json").read_text(encoding="utf-8"))
+    try:
+        nombres_ast = json.loads((RAIZ / "data" / "nombres_ast.json").read_text(encoding="utf-8"))
+    except ValueError as e:  # un error de edición no debe parar la actualización del tiempo
+        print(f"AVISO: data/nombres_ast.json no es un JSON válido ({e}); se usan los nombres en castellano")
+        nombres_ast = {}
     return concejos, webcams, nombres_ast
 
 
