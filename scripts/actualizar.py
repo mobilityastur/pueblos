@@ -28,6 +28,10 @@ URL_PREDICCION = "https://opendata.aemet.es/opendata/api/prediccion/especifica/m
 URL_HORARIA = "https://opendata.aemet.es/opendata/api/prediccion/especifica/municipio/horaria/{codigo}"
 HORAS = 36            # horas de predicción horaria que guardamos desde la hora actual
 DIARIA_CADA_S = 3 * 3600  # la diaria (5 días) cambia poco: se pide cada 3 horas
+# Por ejecución solo se renuevan los concejos con datos más antiguos. Con el cronjob
+# cada 15 minutos, los 78 se renuevan aprox. cada hora (horaria) y cada 3 h (diaria).
+LOTE_HORARIA = 20
+LOTE_DIARIA = 15
 PAUSA_S = 2.0  # AEMET limita las peticiones: vamos despacio
 REINTENTOS = 3
 ESPERA_429_S = 10
@@ -211,9 +215,15 @@ def main():
     concejos_base, webcams, nombres_ast = cargar_datos_locales()
     errores = []
 
-    # 1. Coordenadas y códigos desde el maestro de municipios de AEMET
+    # 1. Coordenadas y códigos desde el maestro de municipios de AEMET.
+    #    Si ya los tenemos guardados para todos los concejos, no se vuelve a pedir.
+    codigos = dict(cache_previo.get("_codigos") or {})
+    coords = dict(cache_previo.get("_coords") or {})
+    completos = all(c["nombre"] in codigos and codigos[c["nombre"]] in coords for c in concejos_base)
     maestro = {}
-    if clave:
+    if not clave:
+        errores.append("Falta el secreto AEMET_API_KEY")
+    elif not completos:
         try:
             for m in aemet(URL_MUNICIPIOS, clave):
                 codigo = str(m.get("id", "")).replace("id", "")
@@ -221,12 +231,9 @@ def main():
                     maestro[codigo] = m
         except Exception as e:  # noqa: BLE001 - seguimos con lo que hubiera
             errores.append(f"maestro municipios: {e}")
-    else:
-        errores.append("Falta el secreto AEMET_API_KEY")
 
     # Emparejar cada concejo con su código real de AEMET/INE por el nombre
     # (los códigos INE no siguen el orden alfabético actual).
-    codigos = dict(cache_previo.get("_codigos") or {})
     if maestro:
         por_nombre = {}
         for cod, m in maestro.items():
@@ -241,23 +248,38 @@ def main():
         if len(set(codigos.values())) != len(codigos):
             errores.append("hay concejos con el mismo código: revisar nombres")
 
-    # 2. Predicción por concejo
+    # 2. Qué concejos se renuevan en esta ejecución: los de datos más antiguos
+    def antiguedad(codigo, campo):
+        return (cache_previo.get(codigo) or {}).get(campo) or ""  # sin fecha = el más antiguo
+    def edad_s(ts):
+        return (AHORA - datetime.fromisoformat(ts)).total_seconds() if ts else None
+    activos = [codigos[c["nombre"]] for c in concejos_base if codigos.get(c["nombre"])]
+    pedir_horaria = set(sorted(activos, key=lambda k: antiguedad(k, "horas_ts"))[:LOTE_HORARIA])
+    def diaria_caducada(k):
+        edad = edad_s(antiguedad(k, "diaria_ts"))
+        return not (cache_previo.get(k) or {}).get("tiempo") or edad is None or edad > DIARIA_CADA_S
+    caducadas = [k for k in activos if diaria_caducada(k)]
+    pedir_diaria = set(sorted(caducadas, key=lambda k: antiguedad(k, "diaria_ts"))[:LOTE_DIARIA])
+
+    # 3. Predicción por concejo
     resultado = []
     diarias = {}
+    marcas_horaria = {}
     for c in concejos_base:
         codigo = codigos.get(c["nombre"])
         if not codigo:
             continue  # sin código fiable preferimos no pintarlo antes que pintarlo mal
         ficha = maestro.get(codigo, {})
-        lat = parsear_coordenada(ficha.get("latitud")) or c.get("lat")
-        lon = parsear_coordenada(ficha.get("longitud")) or c.get("lon")
+        lat = parsear_coordenada(ficha.get("latitud")) or (coords.get(codigo) or [None, None])[0]
+        lon = parsear_coordenada(ficha.get("longitud")) or (coords.get(codigo) or [None, None])[1]
+        if lat is not None and lon is not None:
+            coords[codigo] = [lat, lon]
         previo = cache_previo.get(codigo) or {}
         hay_tiempo = lambda: clave and time.monotonic() - INICIO <= PRESUPUESTO_S
 
-        # Predicción diaria (5 días): solo si la guardada tiene más de 3 horas
+        # Predicción diaria (5 días): solo si le toca en esta ejecución
         tiempo, diaria_ts = None, previo.get("diaria_ts")
-        edad = (AHORA - datetime.fromisoformat(diaria_ts)).total_seconds() if diaria_ts else None
-        if hay_tiempo() and (edad is None or edad > DIARIA_CADA_S or not previo.get("tiempo")):
+        if hay_tiempo() and codigo in pedir_diaria:
             try:
                 tiempo = parsear_prediccion(con_reintentos(URL_PREDICCION.format(codigo=codigo), clave))
                 if tiempo:
@@ -270,11 +292,13 @@ def main():
                 tiempo["dias"] = [d for d in tiempo["dias"] if d["fecha"] >= HOY_MADRID]
                 tiempo = tiempo if tiempo["dias"] else None
 
-        # Predicción horaria: en cada ejecución
-        horas = None
-        if hay_tiempo():
+        # Predicción horaria: solo si le toca en esta ejecución
+        horas, horas_ts = None, previo.get("horas_ts")
+        if hay_tiempo() and codigo in pedir_horaria:
             try:
                 horas = parsear_horaria(con_reintentos(URL_HORARIA.format(codigo=codigo), clave), HORA_MADRID) or None
+                if horas:
+                    horas_ts = AHORA.isoformat()
             except Exception as e:  # noqa: BLE001
                 errores.append(f"{c['nombre']} (horaria): {e}")
         if horas is None:
@@ -284,6 +308,8 @@ def main():
             tiempo["horas"] = horas
         if tiempo and tiempo.get("dias"):
             diarias[codigo] = diaria_ts
+        if horas:
+            marcas_horaria[codigo] = horas_ts
         resultado.append({
             "codigo": codigo,
             "nombre": c["nombre"],
@@ -310,11 +336,14 @@ def main():
             continue
         sin_horas = {k: v for k, v in r["tiempo"].items() if k != "horas"}
         cache[r["codigo"]] = {"tiempo": sin_horas if sin_horas.get("dias") else None,
-                              "diaria_ts": diarias.get(r["codigo"]), "horas": r["tiempo"].get("horas")}
+                              "diaria_ts": diarias.get(r["codigo"]), "horas": r["tiempo"].get("horas"),
+                              "horas_ts": marcas_horaria.get(r["codigo"])}
     cache["_codigos"] = codigos
+    cache["_coords"] = coords
     (salida / "cache.json").write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
     print(f"{len(resultado)} concejos, {sum(1 for r in resultado if r['tiempo'] and r['tiempo'].get('dias'))} con diaria, "
-          f"{sum(1 for r in resultado if r['tiempo'] and r['tiempo'].get('horas'))} con horaria, {len(errores)} avisos")
+          f"{sum(1 for r in resultado if r['tiempo'] and r['tiempo'].get('horas'))} con horaria, {len(errores)} avisos; "
+          f"pedidas {len(pedir_horaria)} horarias y {len(pedir_diaria)} diarias")
     return 0
 
 
