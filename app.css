@@ -122,7 +122,7 @@ button { font: inherit; color: inherit; }
 .ficha .dia b { display: block; color: var(--suave); font-weight: 600; text-transform: capitalize; }
 .ficha .dia .max { display: block; font-weight: 700; font-size: 17px; margin-top: 4px; }
 .ficha .dia .min { display: block; color: var(--suave); }
-.ficha .dia .lluvia { display: block; color: var(--azul-cantabrico); font-size: 12px; margin-top: 2px; }
+
 .ficha h3 { margin: 16px 0 8px; font: 600 13px/1 Barlow, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: var(--suave); }
 .ficha .cam { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--ambar); color: var(--noche); text-decoration: none; border-radius: 14px; padding: 12px 14px; font-weight: 600; margin-bottom: 8px; }
 .ficha .cam span:last-child { font-size: 20px; }
@@ -145,5 +145,25 @@ button { font: inherit; color: inherit; }
 .ficha .hora:first-child b { color: var(--texto); }
 .ficha .hora .ico { display: block; font-size: 20px; margin: 4px 0 2px; }
 .ficha .hora .t { display: block; font-weight: 700; font-size: 16px; }
-.ficha .hora .p { display: block; color: var(--azul-cantabrico); font-size: 11px; min-height: 14px; }
+.ficha .hora .p { display: block; min-height: 20px; }
 .ficha .cuerpo > h3:first-child { margin-top: 2px; }
+
+/* Probabilidad de lluvia: más contraste cuanto más probable */
+.prob { display: inline-block; margin-top: 4px; padding: 2px 6px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.prob.nula { color: #8FA0AD; background: transparent; font-weight: 600; }
+.prob.baja { color: #BFE7FA; background: rgba(63, 167, 201, .22); }
+.prob.media { color: #FFFFFF; background: rgba(63, 167, 201, .55); }
+.prob.alta { color: #FFFFFF; background: #1E8FD0; }
+.ficha .hora, .ficha .dia { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; -webkit-tap-highlight-color: transparent; }
+.ficha .hora:active, .ficha .dia:active { transform: scale(.96); }
+.ficha .hora.sel, .ficha .dia.sel { box-shadow: inset 0 0 0 2px var(--ambar); }
+.ficha .detalle { background: #2C4A5E; border-radius: 16px; padding: 12px 14px; margin: -6px 0 14px; animation: subir .25s ease; }
+.ficha .detalle b { display: block; color: var(--ambar); font-size: 14px; margin-bottom: 4px; text-transform: none; }
+.ficha .detalle p { margin: 4px 0 0; font-size: 15px; }
+.ficha .detalle .grande { font-size: 18px; }
+.ficha .detalle .grande strong { font-size: 22px; }
+.ficha .detalle .lluvia-det strong { font-size: 20px; }
+.ficha .detalle .lluvia-det.alta strong, .ficha .detalle .lluvia-det.media strong { color: #7FD3F5; }
+
+.ficha .dia .prob { padding: 2px 4px; font-size: 11px; letter-spacing: -.2px; }
+.ficha .dia { padding: 8px 2px; min-width: 0; }

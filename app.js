@@ -42,6 +42,21 @@ function guardarModo(m) {
 function nombreMostrado(c) { return (c && (c.nombreAst || c.nombre)) || ""; }
 function hoy(c) { return c && c.tiempo && c.tiempo.dias && c.tiempo.dias[0] ? c.tiempo.dias[0] : null; }
 const DIAS_AST = ["Dom", "Llu", "Mar", "Mié", "Xue", "Vie", "Sáb"];
+const DIAS_AST_LARGO = ["Domingu", "Llunes", "Martes", "Miércoles", "Xueves", "Vienres", "Sábadu"];
+// Etiqueta de probabilidad de lluvia con más contraste cuanto más probable.
+function nivelLluvia(p) { return p == null ? "" : p < 10 ? "nula" : p < 40 ? "baja" : p < 70 ? "media" : "alta"; }
+function etiquetaLluvia(p) {
+  return p == null ? "" : `<span class="prob ${nivelLluvia(p)}">💧 ${Math.round(p)}%</span>`;
+}
+function nombreDia(fecha) {
+  const hoyS = hoyISO();
+  const man = new Date(`${hoyS}T12:00:00`); man.setDate(man.getDate() + 1);
+  const manS = `${man.getFullYear()}-${String(man.getMonth() + 1).padStart(2, "0")}-${String(man.getDate()).padStart(2, "0")}`;
+  if (fecha === hoyS) return "Hoy";
+  if (fecha === manS) return "Mañana";
+  const d = new Date(`${fecha}T12:00:00`);
+  return `${DIAS_AST_LARGO[d.getDay()]} ${d.getDate()}`;
+}
 function diaSemana(fecha) {
   return DIAS_AST[new Date(`${fecha}T12:00:00`).getDay()];
 }
@@ -468,25 +483,25 @@ function abrirFicha(codigo) {
   const proximas = horas(c).filter((x) => x.h >= (hAhora ? hAhora.h : clave)).slice(0, 24);
   const franja = proximas.length
     ? `<h3>Próximas horas</h3><div class="franja">${proximas.map((x, i) => `
-        <div class="hora${x.h.endsWith("T00") && i ? " medianoche" : ""}">
+        <div class="hora${x.h.endsWith("T00") && i ? " medianoche" : ""}" data-i="${i}" role="button" tabindex="0">
           <b>${i === 0 ? "Ahora" : x.h.slice(11) + " h"}</b>
           <span class="ico">${ICONO[claveCielo(tipoCielo(x))] || "·"}</span>
           <span class="t">${x.t != null ? Math.round(x.t) + "°" : "–"}</span>
-          <span class="p">${x.p != null ? `💧${Math.round(x.p)}%` : ""}</span>
-        </div>`).join("")}</div>`
+          <span class="p">${etiquetaLluvia(x.p)}</span>
+        </div>`).join("")}</div><div class="detalle" id="detalle-horas" hidden></div>`
     : "";
   const dias = (c.tiempo && c.tiempo.dias) || [];
   const webcams = c.webcams || [];
   const fuentes = [...new Set(webcams.map((w) => w.fuente))].join(" y ");
 
   const semana = dias.length
-    ? `<div class="semana">${dias.map((x) => `
-        <div class="dia">
+    ? `<div class="semana">${dias.map((x, i) => `
+        <div class="dia" data-i="${i}" role="button" tabindex="0">
           <b>${esc(diaSemana(x.fecha))}</b>
           <span class="max">${x.max != null ? Math.round(x.max) + "°" : "–"}</span>
           <span class="min">${x.min != null ? Math.round(x.min) + "°" : "–"}</span>
-          ${x.lluvia != null ? `<span class="lluvia">💧 ${Math.round(x.lluvia)}%</span>` : ""}
-        </div>`).join("")}</div>`
+          ${etiquetaLluvia(x.lluvia)}
+        </div>`).join("")}</div><div class="detalle" id="detalle-dias" hidden></div>`
     : `<p class="sin-cam">Todavía no hay previsión para este concejo.</p>`;
 
   const camaras = webcams.length
@@ -518,6 +533,39 @@ function abrirFicha(codigo) {
   velo.hidden = false;
   ficha.scrollTop = 0;
   ficha.querySelector(".cerrar").addEventListener("click", cerrarFicha);
+
+  // Al tocar una hora o un día, se amplía su detalle debajo de la fila.
+  const detalleHora = (x) => {
+    const cl = { c: x.c, d: x.d };
+    const mm = x.mm != null && x.mm > 0 ? `<p>Precipitación prevista: <strong>${String(x.mm).replace(".", ",")} mm</strong></p>` : "";
+    return `<b>${esc(nombreDia(x.h.slice(0, 10)))} a las ${x.h.slice(11)}:00</b>
+      <p class="grande">${ICONO[claveCielo(tipoCielo(cl))] || ""} ${esc(x.d || "")} · <strong>${x.t != null ? Math.round(x.t) + "°" : "–"}</strong></p>
+      <p class="lluvia-det ${nivelLluvia(x.p)}">💧 Probabilidad de lluvia: <strong>${x.p != null ? Math.round(x.p) + "%" : "sin dato"}</strong></p>${mm}`;
+  };
+  const detalleDia = (x) => {
+    const cl = x.cielo || x.codigoCielo ? { c: x.codigoCielo, d: x.cielo } : Object.values(x.cielos || {}).find((y) => y.c || y.d) || null;
+    return `<b>${esc(nombreDia(x.fecha))}</b>
+      <p class="grande">${cl ? (ICONO[claveCielo(tipoCielo({ c: String(cl.c || "").replace("n", ""), d: cl.d }))] || "") + " " + esc(cl.d || "") + " · " : ""}<strong>${x.max != null ? Math.round(x.max) + "°" : "–"}</strong> / ${x.min != null ? Math.round(x.min) + "°" : "–"}</p>
+      <p class="lluvia-det ${nivelLluvia(x.lluvia)}">💧 Probabilidad de lluvia: <strong>${x.lluvia != null ? Math.round(x.lluvia) + "%" : "sin dato"}</strong></p>`;
+  };
+  const enlazar = (selector, caja, lista, pintarDet) => {
+    const det = ficha.querySelector(caja);
+    if (!det) return;
+    ficha.querySelectorAll(selector).forEach((el) => {
+      const abrir = () => {
+        const ya = el.classList.contains("sel");
+        ficha.querySelectorAll(selector).forEach((o) => o.classList.remove("sel"));
+        if (ya) { det.hidden = true; return; }
+        el.classList.add("sel");
+        det.innerHTML = pintarDet(lista[+el.dataset.i]);
+        det.hidden = false;
+      };
+      el.addEventListener("click", abrir);
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrir(); } });
+    });
+  };
+  enlazar(".hora", "#detalle-horas", proximas, detalleHora);
+  enlazar(".dia", "#detalle-dias", dias, detalleDia);
 }
 function cerrarFicha() {
   activa = null;
@@ -555,7 +603,7 @@ async function cargarDatos() {
 }
 
 // Si se ha publicado una versión nueva, recargar saltándose la caché del navegador.
-const VERSION_APP = "10";
+const VERSION_APP = "11";
 async function comprobarVersion() {
   try {
     const r = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });
