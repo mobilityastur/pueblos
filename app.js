@@ -426,6 +426,14 @@ function coincide(c) {
 }
 function pintarLista() {
   if (!estado) return;
+  // Con búsqueda o con "Ver los 78 concejos" se ve la lista; si no, el panel de tarjetas.
+  const verLista = !!filtro || listaAbierta;
+  lista.hidden = !verLista;
+  document.getElementById("panel").hidden = verLista;
+  const boton = document.getElementById("ver-todos");
+  boton.hidden = !!filtro;
+  boton.textContent = listaAbierta ? "Volver al resumen" : `Ver los ${estado.concejos.length} concejos`;
+  if (!verLista) { pintarPanel(); return; }
   const filas = [...estado.concejos]
     .filter(coincide)
     .sort((a, b) => nombreMostrado(a).localeCompare(nombreMostrado(b), "es"));
@@ -576,6 +584,207 @@ function cerrarFicha() {
 velo.addEventListener("click", cerrarFicha);
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !ficha.hidden) cerrarFicha(); });
 
+// ---------- panel de tarjetas ----------
+let listaAbierta = false;
+let ZONAS = {};
+const ZONA_NOMBRE = { costa: "Costa", interior: "Interior", montana: "Montaña" };
+const ZONA_COLOR = { costa: "#2F96C2", interior: "#5E9E3E", montana: "#A06FD3" };
+const ORDEN_Z = ["costa", "interior", "montana"];
+const zonaDe = (c) => ZONAS[c.nombre] || "interior";
+const media = (xs) => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+const fmt = (x) => x == null ? "–" : `${Math.round(x)}°`;
+
+document.getElementById("ver-todos").addEventListener("click", () => {
+  listaAbierta = !listaAbierta;
+  pintarLista();
+  if (!listaAbierta) document.querySelector(".listado").scrollIntoView({ behavior: "smooth" });
+});
+
+function pintarPanel() {
+  const el = document.getElementById("panel");
+  if (!estado) return;
+  el.innerHTML = tarjetaAhora() + tarjeta36h() + tarjetaDias() + tarjetaSol();
+  el.querySelectorAll("[data-codigo]").forEach((b) => b.addEventListener("click", () => abrirFicha(b.dataset.codigo)));
+  activarGrafica36h();
+}
+
+// 1. Ahora en Asturias: extremos y dónde es probable la lluvia
+function tarjetaAhora() {
+  const filas = estado.concejos.map((c) => ({ c, h: horaActual(c) })).filter((x) => x.h && x.h.t != null);
+  if (!filas.length) return "";
+  const calido = filas.reduce((a, b) => (b.h.t > a.h.t ? b : a));
+  const frio = filas.reduce((a, b) => (b.h.t < a.h.t ? b : a));
+  const lluvioso = filas.reduce((a, b) => ((b.h.p ?? -1) > (a.h.p ?? -1) || ((b.h.p ?? -1) === (a.h.p ?? -1) && (b.h.mm ?? 0) > (a.h.mm ?? 0)) ? b : a));
+  const hora = `${String(new Date().getHours()).padStart(2, "0")}:00`;
+  const porZona = ORDEN_Z.map((z) => {
+    const fz = filas.filter((x) => zonaDe(x.c) === z);
+    const n = fz.filter((x) => (x.h.p ?? 0) >= 50).length;
+    return { z, n, total: fz.length };
+  });
+  const totalLl = porZona.reduce((a, b) => a + b.n, 0);
+  const resumen = totalLl === 0 ? "No se espera lluvia en esta hora en ningún concejo."
+    : totalLl === filas.length ? "Lluvia probable en toda Asturias en esta hora."
+    : `Lluvia probable (50 % o más) en ${totalLl} de ${filas.length} concejos.`;
+  const ext = (txt, x, valor) => `<button class="extremo" data-codigo="${esc(x.c.codigo)}"><small>${txt}</small><strong>${valor}</strong><span>${esc(nombreMostrado(x.c))}</span></button>`;
+  return `<section class="tarjeta">
+    <h3>Ahora en Asturias · ${hora}</h3>
+    <p class="resumen">${resumen}</p>
+    <div class="extremos">
+      ${ext("Más templado", calido, fmt(calido.h.t))}
+      ${ext("Más frío", frio, fmt(frio.h.t))}
+      ${ext("Más lluvia", lluvioso, lluvioso.h.p != null ? Math.round(lluvioso.h.p) + "%" : "–")}
+    </div>
+    <div class="zonas-lluvia">${porZona.map(({ z, n, total }) => `
+      <div class="zl"><b><span class="punto-z" style="background:${ZONA_COLOR[z]}"></span>${ZONA_NOMBRE[z]}</b>
+        <div class="pista"><div class="lleno" style="width:${total ? (n / total) * 100 : 0}%;background:${ZONA_COLOR[z]}"></div></div>
+        <em>${n}/${total}</em></div>`).join("")}</div>
+    <p class="pie-t">Concejos con probabilidad de lluvia de 50 % o más, por zona.</p>
+  </section>`;
+}
+
+// 2. Próximas 36 horas: media por zona y banda mín.–máx. de toda Asturias
+let serie36 = null;
+function datos36h() {
+  const inicio = claveHora();
+  const claves = [...new Set(estado.concejos.flatMap((c) => horas(c).map((x) => x.h)))].filter((h) => h >= inicio).sort().slice(0, 36);
+  const filas = claves.map((h) => {
+    const vals = { costa: [], interior: [], montana: [] };
+    const todos = []; let noches = 0, n = 0;
+    for (const c of estado.concejos) {
+      const x = horas(c).find((y) => y.h === h);
+      if (!x || x.t == null) continue;
+      vals[zonaDe(c)].push(x.t); todos.push(x.t); n++;
+      if (String(x.c).endsWith("n")) noches++;
+    }
+    return { h, costa: media(vals.costa), interior: media(vals.interior), montana: media(vals.montana),
+      min: todos.length ? Math.min(...todos) : null, max: todos.length ? Math.max(...todos) : null, noche: n && noches / n > 0.5 };
+  }).filter((f) => f.min != null);
+  return filas;
+}
+function tarjeta36h() {
+  const f = datos36h();
+  if (f.length < 2) return "";
+  serie36 = f;
+  const W = 340, H = 190, iz = 26, de = 84, ar = 10, ab = 22;
+  const lo = Math.floor(Math.min(...f.map((x) => x.min)) - 1), hi = Math.ceil(Math.max(...f.map((x) => x.max)) + 1);
+  const X = (i) => iz + (i / (f.length - 1)) * (W - iz - de);
+  const Y = (v) => ar + (1 - (v - lo) / (hi - lo)) * (H - ar - ab);
+  const paso = hi - lo > 14 ? 5 : hi - lo > 7 ? 3 : 2;
+  let rej = "";
+  for (let v = Math.ceil(lo / paso) * paso; v <= hi; v += paso) rej += `<line class="rejilla" x1="${iz}" x2="${W - de}" y1="${Y(v)}" y2="${Y(v)}"/><text class="eje" x="${iz - 4}" y="${Y(v) + 3}" text-anchor="end">${v}°</text>`;
+  let noche = "";
+  f.forEach((x, i) => { if (x.noche) noche += `<rect class="noche" x="${X(Math.max(0, i - 0.5))}" y="${ar}" width="${X(Math.min(f.length - 1, i + 0.5)) - X(Math.max(0, i - 0.5))}" height="${H - ar - ab}"/>`; });
+  const ejeX = f.map((x, i) => {
+    const hh = x.h.slice(11);
+    if (i === 0) return `<text class="eje" x="${X(0)}" y="${H - 6}" text-anchor="start">Ahora</text>`;
+    return hh % 6 === 0 && i > 2 ? `<text class="eje" x="${X(i)}" y="${H - 6}" text-anchor="middle">${hh} h</text>` : "";
+  }).join("");
+  const banda = `<path class="banda" d="M${f.map((x, i) => `${X(i)},${Y(x.max)}`).join(" L")} L${f.map((x, i) => [i, x]).reverse().map(([i, x]) => `${X(i)},${Y(x.min)}`).join(" L")} Z"/>`;
+  const lineas = ORDEN_Z.map((z) => `<path class="linea" stroke="${ZONA_COLOR[z]}" d="M${f.map((x, i) => `${X(i)},${Y(x[z])}`).join(" L")}"/>`).join("");
+  // Etiquetas directas al final de cada línea, separadas si se pisan
+  const finales = ORDEN_Z.map((z) => ({ z, y: Y(f[f.length - 1][z]), v: f[f.length - 1][z] })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < finales.length; i++) if (finales[i].y - finales[i - 1].y < 13) finales[i].y = finales[i - 1].y + 13;
+  const etiquetas = finales.map(({ z, y, v }) => `<circle cx="${X(f.length - 1)}" cy="${Y(v)}" r="3" fill="${ZONA_COLOR[z]}"/><text class="etq" x="${X(f.length - 1) + 6}" y="${y + 4}">${fmt(v)} ${ZONA_NOMBRE[z]}</text>`).join("");
+  // Resumen en texto
+  const minM = f.reduce((a, b) => (b.montana < a.montana ? b : a));
+  const maxC = f.reduce((a, b) => (b.costa > a.costa ? b : a));
+  const cuando = (h) => `${nombreDia(h.slice(0, 10)).toLowerCase()} a las ${h.slice(11)} h`;
+  return `<section class="tarjeta">
+    <h3>Próximas 36 horas</h3>
+    <p class="resumen">Mínima en la montaña de ${fmt(minM.montana)} (${cuando(minM.h)}); en la costa se llega a ${fmt(maxC.costa)} (${cuando(maxC.h)}).</p>
+    <div class="leyenda-z">${ORDEN_Z.map((z) => `<span><span class="punto-z" style="background:${ZONA_COLOR[z]}"></span>${ZONA_NOMBRE[z]}</span>`).join("")}<span><span class="punto-z" style="background:#8FA0AD;opacity:.5"></span>Rango en Asturias</span></div>
+    <div class="grafica" id="g36"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Temperatura media prevista por zona en las próximas 36 horas">${noche}${rej}${banda}${lineas}${etiquetas}${ejeX}
+      <line class="cruz" id="g36-cruz" y1="${ar}" y2="${H - ab}" visibility="hidden"/></svg><div class="globo" id="g36-globo" hidden></div></div>
+    <p class="pie-t">Media de los concejos de cada zona. Zona sombreada: noche.</p>
+  </section>`;
+}
+function activarGrafica36h() {
+  const caja = document.getElementById("g36");
+  if (!caja || !serie36) return;
+  const svgG = caja.querySelector("svg"), cruz = document.getElementById("g36-cruz"), globo = document.getElementById("g36-globo");
+  const vb = svgG.viewBox.baseVal, iz = 26, de = 84, f = serie36;
+  const mover = (ev) => {
+    const r = svgG.getBoundingClientRect();
+    const xs = ((ev.clientX - r.left) / r.width) * vb.width;
+    const i = Math.max(0, Math.min(f.length - 1, Math.round(((xs - iz) / (vb.width - iz - de)) * (f.length - 1))));
+    const x = iz + (i / (f.length - 1)) * (vb.width - iz - de);
+    cruz.setAttribute("x1", x); cruz.setAttribute("x2", x); cruz.setAttribute("visibility", "visible");
+    const d = f[i];
+    globo.innerHTML = `<b>${esc(nombreDia(d.h.slice(0, 10)))}, ${d.h.slice(11)}:00</b>${ORDEN_Z.map((z) => `<span class="punto-z" style="background:${ZONA_COLOR[z]}"></span>${ZONA_NOMBRE[z]} ${fmt(d[z])}`).join("<br>")}<br><span style="color:var(--suave)">Asturias ${fmt(d.min)} a ${fmt(d.max)}</span>`;
+    globo.hidden = false;
+    const px = (x / vb.width) * r.width;
+    globo.style.left = `${Math.min(Math.max(px - 70, 0), r.width - 150)}px`;
+    globo.style.top = `-8px`;
+    globo.style.transform = "translateY(-100%)";
+  };
+  const ocultar = () => { cruz.setAttribute("visibility", "hidden"); globo.hidden = true; };
+  svgG.addEventListener("pointermove", mover);
+  svgG.addEventListener("pointerdown", mover);
+  svgG.addEventListener("pointerleave", ocultar);
+}
+
+// 3. Próximos 5 días: rango medio de mínimas a máximas en Asturias y lluvia media
+function tarjetaDias() {
+  const fechas = [...new Set(estado.concejos.flatMap((c) => (c.tiempo && c.tiempo.dias || []).map((d) => d.fecha)))].sort().slice(0, 5);
+  const filas = fechas.map((fe) => {
+    const ds = estado.concejos.map((c) => (c.tiempo && c.tiempo.dias || []).find((d) => d.fecha === fe)).filter(Boolean);
+    const cuenta = {};
+    ds.forEach((d) => {
+      const cl = d.cielo || d.codigoCielo ? { c: String(d.codigoCielo || "").replace("n", ""), d: d.cielo } : Object.values(d.cielos || {}).find((y) => y.c || y.d);
+      const k = claveCielo(tipoCielo(cl ? { c: String(cl.c || "").replace("n", ""), d: cl.d } : null));
+      if (k) cuenta[k] = (cuenta[k] || 0) + 1;
+    });
+    const tipo = Object.entries(cuenta).sort((a, b) => b[1] - a[1])[0];
+    return { fe, mn: media(ds.map((d) => d.min).filter((x) => x != null)), mx: media(ds.map((d) => d.max).filter((x) => x != null)),
+      ll: media(ds.map((d) => d.lluvia).filter((x) => x != null)), ico: tipo ? ICONO[tipo[0]] : "" };
+  }).filter((x) => x.mn != null && x.mx != null);
+  if (!filas.length) return "";
+  const lo = Math.min(...filas.map((x) => x.mn)), hi = Math.max(...filas.map((x) => x.mx));
+  const pos = (v) => ((v - lo) / (hi - lo || 1)) * 100;
+  return `<section class="tarjeta">
+    <h3>Próximos días en Asturias</h3>
+    <div class="dias5">${filas.map((x) => `
+      <div class="d5" title="Media de Asturias: mínima ${fmt(x.mn)}, máxima ${fmt(x.mx)}, lluvia ${x.ll != null ? Math.round(x.ll) + " %" : "–"}">
+        <span class="nom">${esc(nombreDia(x.fe).replace(/ \d+$/, ""))}</span><span class="ico">${x.ico}</span>
+        <span class="mn">${fmt(x.mn)}</span>
+        <span class="rango"><i style="left:${pos(x.mn)}%;width:${Math.max(pos(x.mx) - pos(x.mn), 3)}%;background:linear-gradient(90deg, ${colorTempFijo(x.mn, lo, hi)}, ${colorTempFijo(x.mx, lo, hi)})"></i></span>
+        <span class="mx">${fmt(x.mx)}</span>${etiquetaLluvia(x.ll)}
+      </div>`).join("")}</div>
+    <p class="pie-t">Mínima y máxima medias de los 78 concejos; gota: probabilidad media de lluvia.</p>
+  </section>`;
+}
+function colorTempFijo(v, lo, hi) {
+  const t = (v - lo) / (hi - lo || 1);
+  for (let i = 1; i < ESCALA_TEMP.length; i++) if (t <= ESCALA_TEMP[i][0]) return mezclar(ESCALA_TEMP[i - 1][1], ESCALA_TEMP[i][1], (t - ESCALA_TEMP[i - 1][0]) / (ESCALA_TEMP[i][0] - ESCALA_TEMP[i - 1][0]));
+  return ESCALA_TEMP[ESCALA_TEMP.length - 1][1];
+}
+
+// 4. Luz del día en Uviéu (cálculo astronómico, no hace falta pedir nada)
+function solDe(fecha, lat = 43.36, lon = -5.85) {
+  const rad = Math.PI / 180, [y, m, d] = fecha.split("-").map(Number);
+  const jd = Date.UTC(y, m - 1, d, 12) / 86400000 + 2440587.5;
+  const n = Math.ceil(jd - 2451545 + 0.0008), js = n - lon / 360;
+  const M = (357.5291 + 0.98560028 * js) % 360;
+  const C = 1.9148 * Math.sin(M * rad) + 0.02 * Math.sin(2 * M * rad) + 0.0003 * Math.sin(3 * M * rad);
+  const lam = (M + C + 180 + 102.9372) % 360;
+  const jt = 2451545 + js + 0.0053 * Math.sin(M * rad) - 0.0069 * Math.sin(2 * lam * rad);
+  const dec = Math.asin(Math.sin(lam * rad) * Math.sin(23.44 * rad));
+  const w = Math.acos((Math.sin(-0.833 * rad) - Math.sin(lat * rad) * Math.sin(dec)) / (Math.cos(lat * rad) * Math.cos(dec))) / rad;
+  const aFecha = (j) => new Date((j - 2440587.5) * 86400000);
+  return { sale: aFecha(jt - w / 360), pone: aFecha(jt + w / 360) };
+}
+function tarjetaSol() {
+  const hoyS = hoyISO(), ayer = new Date(`${hoyS}T12:00:00`); ayer.setDate(ayer.getDate() - 1);
+  const s = solDe(hoyS), sa = solDe(`${ayer.getFullYear()}-${String(ayer.getMonth() + 1).padStart(2, "0")}-${String(ayer.getDate()).padStart(2, "0")}`);
+  const hm = (d) => d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  const luz = (s.pone - s.sale) / 60000, dif = Math.round(luz - (sa.pone - sa.sale) / 60000);
+  return `<section class="tarjeta">
+    <h3>Luz del día en Uviéu</h3>
+    <div class="sol"><div><small>Amanece</small><strong>${hm(s.sale)}</strong></div><div><small>Anochece</small><strong>${hm(s.pone)}</strong></div><div><small>Horas de luz</small><strong>${Math.floor(luz / 60)} h ${String(Math.round(luz % 60)).padStart(2, "0")}</strong></div></div>
+    <p class="pie-t">${dif === 0 ? "Igual que ayer." : `${Math.abs(dif)} min ${dif < 0 ? "menos" : "más"} que ayer.`}</p>
+  </section>`;
+}
+
 // ---------- carga ----------
 function mostrarEstado() {
   const el = document.getElementById("estado-datos");
@@ -632,6 +841,7 @@ async function iniciar() {
   setInterval(comprobarVersion, REFRESCO_MS);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) comprobarVersion(); });
   try {
+    try { ZONAS = await (await fetch("data/zonas.json?v=1")).json(); } catch { ZONAS = {}; }
     mapa = await (await fetch(URL_MAPA)).json();
     dibujarMapa();
     pintar();

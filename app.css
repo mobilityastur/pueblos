@@ -1,3 +1,4 @@
+[hidden] { display: none !important; }
 :root {
   --noche: #0B1620;
   --pizarra: #1B2A36;
@@ -167,3 +168,47 @@ button { font: inherit; color: inherit; }
 
 .ficha .dia .prob { padding: 2px 4px; font-size: 11px; letter-spacing: -.2px; }
 .ficha .dia { padding: 8px 2px; min-width: 0; }
+
+/* ---------- Panel de tarjetas ---------- */
+:root { --z-costa: #2F96C2; --z-interior: #5E9E3E; --z-montana: #A06FD3; }
+.panel { display: grid; gap: 12px; margin-top: 12px; }
+.tarjeta { background: var(--pizarra); border-radius: 18px; padding: 14px 14px 12px; }
+.tarjeta h3 { margin: 0 0 2px; font: 600 13px/1.2 Barlow, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--suave); }
+.tarjeta .resumen { margin: 0 0 10px; font-size: 15px; color: var(--texto); }
+.tarjeta .pie-t { margin: 8px 0 0; font-size: 12px; color: var(--suave); }
+.extremos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.extremo { background: #223645; border: 0; border-radius: 14px; padding: 10px 6px; text-align: center; cursor: pointer; }
+.extremo small { display: block; font-size: 11px; color: var(--suave); text-transform: uppercase; letter-spacing: .08em; }
+.extremo strong { display: block; font: 800 26px/1.1 Fraunces, Georgia, serif; margin: 4px 0 2px; }
+.extremo span { display: block; font-size: 13px; font-weight: 600; line-height: 1.2; }
+.zonas-lluvia { display: grid; gap: 6px; margin-top: 10px; }
+.zl { display: grid; grid-template-columns: 92px 1fr 42px; align-items: center; gap: 8px; font-size: 13px; }
+.zl .pista { height: 8px; border-radius: 999px; background: #223645; overflow: hidden; }
+.zl .lleno { height: 100%; border-radius: 4px; }
+.zl b { font-weight: 600; } .zl em { font-style: normal; color: var(--suave); text-align: right; }
+.punto-z { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+.leyenda-z { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--suave); margin: 0 0 6px; }
+.grafica { position: relative; }
+.grafica svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+.grafica .eje { fill: var(--suave); font-size: 10px; }
+.grafica .rejilla { stroke: #2A3D4C; stroke-width: 1; }
+.grafica .noche { fill: #0F1A24; opacity: .55; }
+.grafica .banda { fill: #8FA0AD; opacity: .14; }
+.grafica .linea { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.grafica .cruz { stroke: var(--niebla); stroke-width: 1; stroke-dasharray: 3 3; }
+.grafica .etq { font-size: 11px; font-weight: 700; fill: var(--texto); }
+.globo { position: absolute; pointer-events: none; background: #0B1620; border: 1px solid var(--borde); border-radius: 10px; padding: 6px 8px; font-size: 12px; white-space: nowrap; box-shadow: 0 6px 18px rgba(0,0,0,.4); }
+.globo b { display: block; margin-bottom: 2px; }
+.dias5 { display: grid; gap: 4px; }
+.d5 { display: grid; grid-template-columns: 74px 24px 30px 1fr 30px 52px; align-items: center; gap: 6px; font-size: 14px; padding: 4px 0; border-radius: 10px; cursor: default; }
+.d5 .nom { font-weight: 600; } .d5 .ico { font-size: 18px; text-align: center; }
+.d5 .mn { text-align: right; color: var(--suave); } .d5 .mx { font-weight: 700; }
+.d5 .rango { position: relative; height: 8px; background: #223645; border-radius: 999px; }
+.d5 .rango i { position: absolute; top: 0; height: 8px; border-radius: 999px; }
+.d5 .prob { margin: 0; justify-self: end; }
+.sol { display: flex; justify-content: space-between; gap: 8px; text-align: center; }
+.sol div { flex: 1; background: #223645; border-radius: 14px; padding: 10px 4px; }
+.sol small { display: block; font-size: 11px; color: var(--suave); text-transform: uppercase; letter-spacing: .08em; }
+.sol strong { display: block; font-size: 20px; margin-top: 2px; }
+.ver-todos { width: 100%; margin-top: 12px; padding: 14px; border-radius: 14px; border: 1px solid var(--borde); background: var(--hundido); color: var(--texto); font-weight: 600; cursor: pointer; }
+
