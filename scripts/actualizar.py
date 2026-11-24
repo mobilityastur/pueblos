@@ -21,6 +21,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import region  # noqa: E402  (información regional: avisos, texto, estaciones, montaña)
+
 RAIZ = Path(__file__).resolve().parent.parent
 UA = "mobilityastur-pueblos/1.0 (+https://github.com/mobilityastur/pueblos)"
 URL_MUNICIPIOS = "https://opendata.aemet.es/opendata/api/maestro/municipios"
@@ -248,6 +251,10 @@ def main():
         if len(set(codigos.values())) != len(codigos):
             errores.append("hay concejos con el mismo código: revisar nombres")
 
+    # Información regional de AEMET (antes que los concejos: los avisos son lo más urgente)
+    info_region, cache_fuentes = region.obtener_region(
+        clave, cache_previo.get("_fuentes"), AHORA, lambda: time.sleep(PAUSA_S), errores)
+
     # 2. Qué concejos se renuevan en esta ejecución: los de datos más antiguos
     def antiguedad(codigo, campo):
         return (cache_previo.get(codigo) or {}).get(campo) or ""  # sin fecha = el más antiguo
@@ -327,6 +334,7 @@ def main():
             "tiempo": {"nombre": "AEMET OpenData", "ok": bool(clave) and not any("AEMET" in e for e in errores)},
         },
         "errores": errores[:50],
+        "region": info_region,
         "concejos": resultado,
     }
     (salida / "estado.json").write_text(json.dumps(estado, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -340,6 +348,7 @@ def main():
                               "horas_ts": marcas_horaria.get(r["codigo"])}
     cache["_codigos"] = codigos
     cache["_coords"] = coords
+    cache["_fuentes"] = cache_fuentes
     (salida / "cache.json").write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
     print(f"{len(resultado)} concejos, {sum(1 for r in resultado if r['tiempo'] and r['tiempo'].get('dias'))} con diaria, "
           f"{sum(1 for r in resultado if r['tiempo'] and r['tiempo'].get('horas'))} con horaria, {len(errores)} avisos; "

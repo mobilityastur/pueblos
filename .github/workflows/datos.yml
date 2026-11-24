@@ -41,12 +41,6 @@ jobs:
           AEMET_API_KEY: ${{ secrets.AEMET_API_KEY }}
         run: python scripts/actualizar.py --salida out --previo previo
 
-      - name: Muestras de fuentes nuevas (temporal)
-        continue-on-error: true
-        env:
-          AEMET_API_KEY: ${{ secrets.AEMET_API_KEY }}
-        run: python scripts/muestras.py --salida out/muestras
-
       - name: Publicar en la rama datos
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
