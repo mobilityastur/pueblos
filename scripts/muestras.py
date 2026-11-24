@@ -15,15 +15,11 @@ from urllib.parse import quote
 BASE = "https://opendata.aemet.es/opendata/api"
 UA = "mobilityastur-pueblos/1.0 (+https://github.com/mobilityastur/pueblos)"
 FUENTES = {
-    "avisos_63": "/avisos_cap/ultimoelaborado/area/63",
-    "ccaa_hoy_ast": "/prediccion/ccaa/hoy/ast",
-    "ccaa_manana_ast": "/prediccion/ccaa/manana/ast",
-    "obs_1249I": "/observacion/convencional/datos/estacion/1249I",
-    "obs_1208H": "/observacion/convencional/datos/estacion/1208H",
-    "obs_1212E": "/observacion/convencional/datos/estacion/1212E",
-    "normales_1249I": "/valores/climatologicos/normales/estacion/1249I",
-    "montana_peu1_0": "/prediccion/especifica/" + quote("montaña") + "/pasada/area/peu1/dia/0",
-    "montana_peu1": "/prediccion/especifica/" + quote("montaña") + "/pasada/area/peu1",
+    "obs_1249X": "/observacion/convencional/datos/estacion/1249X",
+    "normales_1208H": "/valores/climatologicos/normales/estacion/1208H",
+    "normales_1212E": "/valores/climatologicos/normales/estacion/1212E",
+    "normales_1249X": "/valores/climatologicos/normales/estacion/1249X",
+    "montana_peu1_1": "/prediccion/especifica/" + quote("montaña") + "/pasada/area/peu1/dia/1",
 }
 
 
