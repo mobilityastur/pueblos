@@ -812,7 +812,7 @@ async function cargarDatos() {
 }
 
 // Si se ha publicado una versión nueva, recargar saltándose la caché del navegador.
-const VERSION_APP = "11";
+const VERSION_APP = "12";
 async function comprobarVersion() {
   try {
     const r = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });
