@@ -604,7 +604,10 @@ function pintarPanel() {
   const el = document.getElementById("panel");
   if (!estado) return;
   const R = estado.region || {};
-  el.innerHTML = tarjetaAvisos(R) + tarjetaTexto(R) + tarjetaAhora() + tarjeta36h() + tarjetaNormal(R) + tarjetaMontana(R) + tarjetaDias() + tarjetaSol();
+  // Primero lo esencial (avisos si los hay, previsión de los próximos días, luz del día);
+  // después la ampliación informativa.
+  el.innerHTML = tarjetaAvisos(R) + tarjetaDias() + tarjetaSol() + tarjetaAhora() + tarjeta36h()
+    + tarjetaTexto(R) + tarjetaNormal(R) + tarjetaMontana(R);
   el.querySelectorAll("[data-codigo]").forEach((b) => b.addEventListener("click", () => abrirFicha(b.dataset.codigo)));
   activarGrafica36h();
   el.querySelectorAll(".pestanas button").forEach((b) => b.addEventListener("click", () => {
@@ -921,7 +924,7 @@ async function cargarDatos() {
 }
 
 // Si se ha publicado una versión nueva, recargar saltándose la caché del navegador.
-const VERSION_APP = "13";
+const VERSION_APP = "14";
 async function comprobarVersion() {
   try {
     const r = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });
