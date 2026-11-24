@@ -212,3 +212,39 @@ button { font: inherit; color: inherit; }
 .sol strong { display: block; font-size: 20px; margin-top: 2px; }
 .ver-todos { width: 100%; margin-top: 12px; padding: 14px; border-radius: 14px; border: 1px solid var(--borde); background: var(--hundido); color: var(--texto); font-weight: 600; cursor: pointer; }
 
+/* ---------- Fase 2: avisos, texto, normal, montaña ---------- */
+.tarjeta.avisos { box-shadow: inset 0 0 0 2px var(--nivel); }
+.aviso { padding: 10px 0; border-top: 1px solid var(--borde); }
+.aviso:first-of-type { border-top: 0; padding-top: 6px; }
+.aviso .cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.aviso .nivel { color: #1B1300; font-weight: 800; font-size: 12px; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
+.aviso b { font-size: 16px; }
+.aviso .activo { font-size: 11px; font-weight: 700; color: var(--noche); background: var(--texto); padding: 1px 6px; border-radius: 999px; }
+.aviso p { margin: 4px 0 0; font-size: 14px; }
+.aviso .cuando { color: var(--texto); font-weight: 600; }
+.aviso .zonas { color: var(--suave); font-size: 13px; }
+.ver-avisos { margin-top: 6px; background: none; border: 1px solid var(--borde); border-radius: 999px; padding: 6px 12px; color: var(--texto); cursor: pointer; }
+.pestanas { display: inline-flex; background: var(--hundido); border: 1px solid var(--borde); border-radius: 999px; padding: 3px; margin: 6px 0 8px; }
+.pestanas button { border: 0; background: none; padding: 5px 14px; border-radius: 999px; font-weight: 600; color: var(--suave); cursor: pointer; }
+.pestanas button[aria-selected="true"] { background: var(--azul-cantabrico); color: var(--noche); }
+.destacado { margin: 6px 0; padding: 8px 10px; border-radius: 12px; background: rgba(242, 194, 48, .14); border-left: 3px solid #F2C230; font-size: 14px; }
+.texto-aemet { margin: 6px 0 0; font-size: 15px; line-height: 1.5; }
+.normal, .lugares { display: grid; gap: 2px; margin-top: 6px; font-size: 14px; }
+.normal .fila { display: grid; grid-template-columns: 1.1fr .7fr 1.2fr 1.2fr; gap: 6px; align-items: center; padding: 6px 0; border-top: 1px solid #26394A; }
+.normal .fila.cab, .lugares .fila.cab { border-top: 0; color: var(--suave); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; padding-bottom: 0; }
+.normal .fila small { display: block; color: var(--suave); font-size: 11px; }
+.normal .v, .lugares .v { font-weight: 700; }
+.dif { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 5px; border-radius: 999px; margin-left: 2px; }
+.dif.calor { background: rgba(226, 88, 62, .22); color: #FFB4A3; }
+.dif.frio { background: rgba(63, 167, 201, .22); color: #A9E1F5; }
+.dif.igual { background: #223645; color: var(--suave); }
+.chips-m { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 8px; }
+.chips-m span { background: #223645; border-radius: 999px; padding: 4px 10px; font-size: 13px; }
+.mt { display: grid; grid-template-columns: 22px 1fr; gap: 6px; margin: 6px 0 0; font-size: 14px; line-height: 1.45; }
+.lugares .fila { display: grid; grid-template-columns: 1.8fr .6fr .6fr .9fr; gap: 6px; align-items: center; padding: 5px 0; border-top: 1px solid #26394A; }
+.lugares small { color: var(--suave); font-size: 11px; }
+.lugares { margin-top: 10px; }
+.lugares small { display: block; white-space: nowrap; }
+.mas-m { margin-top: 6px; }
+.mas-m summary { cursor: pointer; color: var(--azul-cantabrico); font-size: 14px; font-weight: 600; padding: 4px 0; }
+

@@ -603,9 +603,118 @@ document.getElementById("ver-todos").addEventListener("click", () => {
 function pintarPanel() {
   const el = document.getElementById("panel");
   if (!estado) return;
-  el.innerHTML = tarjetaAhora() + tarjeta36h() + tarjetaDias() + tarjetaSol();
+  const R = estado.region || {};
+  el.innerHTML = tarjetaAvisos(R) + tarjetaTexto(R) + tarjetaAhora() + tarjeta36h() + tarjetaNormal(R) + tarjetaMontana(R) + tarjetaDias() + tarjetaSol();
   el.querySelectorAll("[data-codigo]").forEach((b) => b.addEventListener("click", () => abrirFicha(b.dataset.codigo)));
   activarGrafica36h();
+  el.querySelectorAll(".pestanas button").forEach((b) => b.addEventListener("click", () => {
+    textoElegido = b.dataset.dia;
+    pintarPanel();
+  }));
+  const mas = el.querySelector(".ver-avisos");
+  if (mas) mas.addEventListener("click", () => { avisosAbiertos = !avisosAbiertos; pintarPanel(); });
+}
+
+// ---------- tarjetas con información regional de AEMET ----------
+let textoElegido = "hoy";
+let avisosAbiertos = false;
+const NIVEL = { rojo: { n: "Rojo", c: "#E5484D", o: 0 }, naranja: { n: "Naranja", c: "#F08A24", o: 1 }, amarillo: { n: "Amarillo", c: "#F2C230", o: 2 } };
+const ICONO_FEN = { costeros: "🌊", nevadas: "❄️", lluvias: "🌧️", tormentas: "⛈️", vientos: "💨", nieblas: "🌫️", galernas: "🌬️", "temperaturas máximas": "🌡️", "temperaturas mínimas": "🥶", aludes: "🏔️" };
+function horaAviso(iso) {
+  const d = new Date(iso);
+  const f = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return `${nombreDia(f).toLowerCase()} ${d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
+}
+
+// 0. Avisos: solo si los hay, agrupados por fenómeno y franja, con todas sus zonas
+function tarjetaAvisos(R) {
+  const av = R.avisos || [];
+  if (!av.length) return "";
+  const grupos = new Map();
+  for (const a of av) {
+    const k = `${a.nivel}|${a.fenomeno}|${a.desde}|${a.hasta}`;
+    if (!grupos.has(k)) grupos.set(k, { ...a, zonas: [] });
+    grupos.get(k).zonas.push(a.zona);
+  }
+  const lista = [...grupos.values()];
+  const peor = lista.reduce((a, b) => (NIVEL[b.nivel].o < NIVEL[a.nivel].o ? b : a)).nivel;
+  const ahoraMs = Date.now();
+  const vis = avisosAbiertos ? lista : lista.slice(0, 3);
+  return `<section class="tarjeta avisos" style="--nivel:${NIVEL[peor].c}">
+    <h3>⚠️ Avisos de AEMET · ${lista.length}</h3>
+    ${vis.map((a) => {
+      const activo = new Date(a.desde).getTime() <= ahoraMs;
+      return `<div class="aviso">
+        <div class="cab"><span class="nivel" style="background:${NIVEL[a.nivel].c}">${NIVEL[a.nivel].n}</span>
+          <b>${ICONO_FEN[a.fenomeno.toLowerCase()] || "⚠️"} ${esc(a.fenomeno)}</b>${activo ? '<span class="activo">Activo</span>' : ""}</div>
+        <p class="cuando">${esc(horaAviso(a.desde))} → ${esc(horaAviso(a.hasta))}</p>
+        <p class="zonas">${a.zonas.map(esc).join(" · ")}</p>
+        <p class="texto">${esc(a.texto)}</p>
+      </div>`;
+    }).join("")}
+    ${lista.length > 3 ? `<button class="ver-avisos">${avisosAbiertos ? "Ver menos" : `Ver los ${lista.length} avisos`}</button>` : ""}
+    <p class="pie-t">Fuente: AEMET Meteoalerta.</p>
+  </section>`;
+}
+
+// 1. Predicción de AEMET para Asturias (hoy / mañana)
+function tarjetaTexto(R) {
+  const tx = R.texto || {};
+  const dias = ["hoy", "manana"].filter((d) => tx[d]);
+  if (!dias.length) return "";
+  const elegido = tx[textoElegido] ? textoElegido : dias[0];
+  const t = tx[elegido];
+  const relevante = t.fenomenos && !/^no se esperan/i.test(t.fenomenos);
+  const elab = t.elaborado ? new Date(t.elaborado).toLocaleString("es-ES", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+  return `<section class="tarjeta">
+    <h3>Predicción de AEMET para Asturias</h3>
+    ${dias.length > 1 ? `<div class="pestanas">${dias.map((d) => `<button data-dia="${d}" aria-selected="${d === elegido}">${d === "hoy" ? "Hoy" : "Mañana"}</button>`).join("")}</div>` : ""}
+    ${relevante ? `<p class="destacado">⚠️ ${esc(t.fenomenos)}</p>` : ""}
+    <p class="texto-aemet">${esc(t.prediccion)}</p>
+    <p class="pie-t">${elegido === "hoy" ? "Para hoy" : "Para mañana"}${elab ? ` · elaborada el ${esc(elab)}` : ""} · Fuente: AEMET.</p>
+  </section>`;
+}
+
+// 2. Comparación con lo normal: lo medido hoy en estaciones frente a la media del mes (1991-2020)
+function difNormal(v, n) {
+  if (v == null || n == null) return "";
+  const d = Math.round((v - n) * 10) / 10;
+  const cls = Math.abs(d) < 1 ? "igual" : d > 0 ? "calor" : "frio";
+  const txt = Math.abs(d) < 1 ? "normal" : `${d > 0 ? "+" : "−"}${String(Math.abs(d)).replace(".", ",")}°`;
+  return `<span class="dif ${cls}">${txt}</span>`;
+}
+function tarjetaNormal(R) {
+  const est = (R.estaciones || []).filter((e) => e.obs && e.normal);
+  if (!est.length) return "";
+  const t1 = (x) => x == null ? "–" : `${String(Math.round(x * 10) / 10).replace(".", ",")}°`;
+  const hora = est[0].obs.hora ? new Date(est[0].obs.hora).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }) : "";
+  return `<section class="tarjeta">
+    <h3>Hoy frente a lo normal</h3>
+    <div class="normal">
+      <div class="fila cab"><span></span><span>Ahora</span><span>Mínima</span><span>Máxima*</span></div>
+      ${est.map((e) => `<div class="fila"><b>${esc(e.nombre)}</b><span class="v">${t1(e.obs.ahora)}</span>
+        <span>${t1(e.obs.min_hoy)} ${difNormal(e.obs.min_hoy, e.normal.min)}<small>normal ${t1(e.normal.min)}</small></span>
+        <span>${t1(e.obs.max_hoy)} ${difNormal(e.obs.max_hoy, e.normal.max)}<small>normal ${t1(e.normal.max)}</small></span></div>`).join("")}
+    </div>
+    <p class="pie-t">Temperaturas medidas hoy en estaciones de AEMET (última, ${esc(hora)}). *Máxima de hoy hasta ahora. Diferencia con la media de mínimas y máximas de ${esc(R.mes || "este mes")}, 1991–2020.</p>
+  </section>`;
+}
+
+// 3. Montaña: Picos de Europa
+function tarjetaMontana(R) {
+  const m = R.montana;
+  if (!m) return "";
+  const nieve = (m.precipitacion || "").match(/cota de nieve[^.]*\./i);
+  const fila = (ic, tit, txt) => txt ? `<p class="mt"><span>${ic}</span><span><b>${tit}.</b> ${esc(txt)}</span></p>` : "";
+  return `<section class="tarjeta">
+    <h3>🏔️ Picos de Europa hoy</h3>
+    <div class="chips-m">${m.isocero ? `<span>Isoterma 0°: <b>${esc(m.isocero)}</b></span>` : ""}${nieve ? `<span>❄️ ${esc(nieve[0].replace(/\.$/, ""))}</span>` : ""}</div>
+    ${fila("🌧️", "Precipitación", m.precipitacion)}
+    ${m.cielo || m.temperaturas || m.viento ? `<details class="mas-m"><summary>Ver predicción completa</summary>${fila("☁️", "Cielo", m.cielo)}${fila("🌡️", "Temperaturas", m.temperaturas)}${fila("💨", "Viento", m.viento)}</details>` : ""}
+    ${(m.lugares || []).length ? `<div class="lugares"><div class="fila cab"><span>Lugar</span><span>Mín</span><span>Máx</span><span>Sensación</span></div>
+      ${m.lugares.map((l) => `<div class="fila"><span>${esc(l.nombre)} <small>${esc(l.altitud || "")}</small></span><span>${fmt(l.min)}</span><span class="v">${fmt(l.max)}</span><span>${fmt(l.st_min)}</span></div>`).join("")}</div>` : ""}
+    <p class="pie-t">Predicción de montaña de AEMET. Sensación: térmica mínima.</p>
+  </section>`;
 }
 
 // 1. Ahora en Asturias: extremos y dónde es probable la lluvia
@@ -759,8 +868,8 @@ function colorTempFijo(v, lo, hi) {
   return ESCALA_TEMP[ESCALA_TEMP.length - 1][1];
 }
 
-// 4. Luz del día en Uviéu (cálculo astronómico, no hace falta pedir nada)
-function solDe(fecha, lat = 43.36, lon = -5.85) {
+// 4. Luz del día en Grau (cálculo astronómico, no hace falta pedir nada)
+function solDe(fecha, lat = 43.388, lon = -6.074) {
   const rad = Math.PI / 180, [y, m, d] = fecha.split("-").map(Number);
   const jd = Date.UTC(y, m - 1, d, 12) / 86400000 + 2440587.5;
   const n = Math.ceil(jd - 2451545 + 0.0008), js = n - lon / 360;
@@ -779,7 +888,7 @@ function tarjetaSol() {
   const hm = (d) => d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
   const luz = (s.pone - s.sale) / 60000, dif = Math.round(luz - (sa.pone - sa.sale) / 60000);
   return `<section class="tarjeta">
-    <h3>Luz del día en Uviéu</h3>
+    <h3>Luz del día en Grau</h3>
     <div class="sol"><div><small>Amanece</small><strong>${hm(s.sale)}</strong></div><div><small>Anochece</small><strong>${hm(s.pone)}</strong></div><div><small>Horas de luz</small><strong>${Math.floor(luz / 60)} h ${String(Math.round(luz % 60)).padStart(2, "0")}</strong></div></div>
     <p class="pie-t">${dif === 0 ? "Igual que ayer." : `${Math.abs(dif)} min ${dif < 0 ? "menos" : "más"} que ayer.`}</p>
   </section>`;
@@ -812,7 +921,7 @@ async function cargarDatos() {
 }
 
 // Si se ha publicado una versión nueva, recargar saltándose la caché del navegador.
-const VERSION_APP = "12";
+const VERSION_APP = "13";
 async function comprobarVersion() {
   try {
     const r = await fetch(`version.json?t=${Date.now()}`, { cache: "no-store" });
